@@ -4,7 +4,6 @@ package com.virtualpairprogrammers;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
@@ -22,7 +21,7 @@ public class Main {
 		inputData.add(20.32);
 		
 //removing logging. Make sure to use the following for the logger import: org.apache.log4j.Logger
-		Logger.getLogger("org.apache").setLevel(Level.WARN); //filter out apache loggers. set level so we only see warnings. For WARN make sure to select the org.apache.log4j.Level Run again to see results
+		Logger.getLogger("org.apache");
 		
 //RDD - resilient distributed dataset, we will sue this to distrubute our data across multiple computers in a cluster
 //spark boilerplate
