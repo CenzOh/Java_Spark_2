@@ -1,0 +1,9 @@
+//From Lesson 12
+package com.virtualpairprogrammers;
+
+public class IntegerWithSquareRoot {
+
+	private int originalNumber;
+	
+	
+}
