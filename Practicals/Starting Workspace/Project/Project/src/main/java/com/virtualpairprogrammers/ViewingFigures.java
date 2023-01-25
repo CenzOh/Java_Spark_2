@@ -1,4 +1,5 @@
-package main.java.com.virtualpairprogrammers;
+//package main.java.com.virtualpairprogrammers;
+package com.virtualpairprogrammers;
 
 
 
@@ -14,7 +15,7 @@ import org.apache.spark.api.java.JavaSparkContext;
 import scala.Tuple2;
 
 /**
- * This class is used in the chapter late in the course where we analyse viewing figures.
+ * This class is used in the chapter late in the course where we analyze viewing figures.
  * You can ignore until then.
  */
 public class ViewingFigures 
@@ -36,6 +37,21 @@ public class ViewingFigures
 		JavaPairRDD<Integer, String> titlesData = setUpTitlesDataRdd(sc, testMode);
 
 		// TODO - over to you!
+		//Warmup
+		JavaPairRDD<Integer, Integer> chapterCountRdd = chapterData.mapToPair( row -> new Tuple2<Integer, Integer>(row._2, 1))
+				.reduceByKey( (value1, value2) -> value1 + value2);
+		chapterCountRdd.foreach(System.out::println);
+		
+/* First get our chapter RDD> DO a mapping. We will call it a row even though its not a DB table. First value is going to be what was fed in but the second part of what was fed in
+ * (courseID), then for the second value it will be an integer of 1. Continuing on the one line / fluently, we will do reduce by key, takes any two values and crunch them down by adding the two
+ * values together. This gives us our resulting RDD which is of type integer, integer. TO test this, just do a quick print line using for each. All pretty routine.
+ * Note that we ARE in test mode so all results should come out to agree with what we have on the captions. Note that the ordering may be different. Output is good.
+ */
+		
+		//Step 1 - remove any duplicated views!
+		viewData = viewData.distinct(); //no need to make a new variable, we can reassign it
+		viewData.foreach(System.out::println);; //sanity check, make sure user 13 watching chapter 96 occurs ONCE.
+//part of lesson 39. Using distinct method to remove any form of duplicates
 		
 		sc.close();
 	}

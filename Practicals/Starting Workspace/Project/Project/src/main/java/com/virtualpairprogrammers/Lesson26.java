@@ -13,7 +13,7 @@ import org.apache.spark.api.java.JavaSparkContext;
 
 import scala.Tuple2;
 
-public class Lesson25 {
+public class Lesson26 {
 	
 	public static void main(String[] args) {
 

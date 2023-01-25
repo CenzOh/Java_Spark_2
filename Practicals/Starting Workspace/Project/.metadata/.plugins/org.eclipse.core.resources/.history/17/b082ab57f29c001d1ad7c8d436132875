@@ -1,0 +1,62 @@
+//Lesson 38
+package com.virtualpairprogrammers;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaPairRDD;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.api.java.Optional;
+
+import scala.Tuple2;
+
+public class Lesson38 {
+	
+	public static void main(String[] args) {
+
+	
+		//Lesson 38 Warmup prior to starting the hard stuff
+/* FIrst objective is to build an RDD containing a key of courseId together with the number of chapters on that course.
+ * So we intake chapterData -> output will be:
+ * courseId | chapters
+ * 1		| 3
+ * 2		| 1
+ * 3		| 10
+ * 
+ * Since beginning we have had this java file called ViewingFigures.java Please refer to it now. Quick note is that in this file all the boring routine work. In it, we have the main method
+ * which has got the usual start up for spark like context, etc. We also have a couple lines of code which set up the initial RDDs, one for view data (userID and 
+ * 
+ */
+	
+		System.setProperty("hadoop.home.dir", "c:/hadoop"); 
+		Logger.getLogger("org.apache").setLevel(Level.WARN); 
+		
+		SparkConf conf = new SparkConf().setAppName("startingSpark").setMaster("local[*]"); 
+		JavaSparkContext sc = new JavaSparkContext(conf);
+		
+		List<Tuple2<Integer, Integer>> visitsRaw = new ArrayList<>();
+		visitsRaw.add(new Tuple2<>(4, 18));
+		visitsRaw.add(new Tuple2<>(6, 4));
+		visitsRaw.add(new Tuple2<>(10, 9));
+		
+		List<Tuple2<Integer, String>> usersRaw = new ArrayList<>();
+		usersRaw.add(new Tuple2<> (1, "John"));
+		usersRaw.add(new Tuple2<> (2, "Bob"));
+		usersRaw.add(new Tuple2<> (3, "Alan"));
+		usersRaw.add(new Tuple2<> (4, "Doris"));
+		usersRaw.add(new Tuple2<> (5, "Marybelle"));
+		usersRaw.add(new Tuple2<> (6, "Raquel"));
+		
+		JavaPairRDD<Integer, Integer> visits = sc.parallelizePairs(visitsRaw);
+		JavaPairRDD<Integer, String> users = sc.parallelizePairs(usersRaw);
+	
+		sc.close();
+	
+	}
+	
+}
