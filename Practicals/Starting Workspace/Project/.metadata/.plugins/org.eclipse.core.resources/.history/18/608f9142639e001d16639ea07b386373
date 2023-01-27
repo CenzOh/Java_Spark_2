@@ -1,0 +1,71 @@
+//Lesson 48
+package com.virtualpairprogrammers;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaPairRDD;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.api.java.Optional;
+
+import scala.Tuple2;
+
+public class Lesson48 {
+	
+	public static void main(String[] args) {
+
+	
+		//Lesson 48 Transformations and Actions
+/* We will now be looking at performance. We ignored before because we needed to tackle the fundamentals first. We do not need to know everything that is 
+ * going on inside Spark but having a good handle on the underlying model of Spark gives us a better chance of writing good Spark Jobs.
+ * First we will look at difference between transformations and actions. We have lightly touched this earlier but we will drill down on it now.
+ * We will then look at the DAG / execution plan and use the Web UI back in chapter with Amazon Elastic Map Reduce. 
+ * Then we will return to transformations and explain difference between Narrow and Wide Transformations. Also looking at shuffles and stages that appear on the console.
+ * We will look at partitioning and one possible issues called a Key Skew.
+ * We will look at the group by key transformation, which we have looked at earlier in the course. Some issues with it, not performance related but operation issues. Easy to get
+ * an out of memory exception in our cluster when working with group by key. General advice - avoid group by key, always to do things in a different way.
+ * Will look at caching and persistence. If we understand transformations and actions and can read DAG, this concept will be easy. Only a single line of code.
+ * 
+ * We are returning back to the Main program we wrote when we first did the keyword ranking. I will include it below. What we are doing is reading an input text file and generate
+ * a set of keywords ranked by populairyt. 
+ * 
+ */
+	
+		System.setProperty("hadoop.home.dir", "c:/hadoop"); 
+		Logger.getLogger("org.apache").setLevel(Level.WARN); 
+		
+		SparkConf conf = new SparkConf().setAppName("startingSpark").setMaster("local[*]"); 
+		JavaSparkContext sc = new JavaSparkContext(conf);
+		/
+		//all from lesson 26
+		JavaRDD<String> initialRdd = sc.textFile("src/main/resources/subtitles/input.txt");	
+		
+		JavaRDD<String> lettersOnlyRdd = initialRdd.map( sentence -> sentence.replaceAll(" ^[a-zA-Z\\s] ", "").toLowerCase()); 
+		
+		JavaRDD<String> removedBlankLines = lettersOnlyRdd.filter( sentence -> sentence.trim().length() > 0); 
+	
+		JavaRDD<String> justWords = removedBlankLines.flatMap( sentence -> Arrays.asList(sentence.split(" ")).iterator());
+		
+		JavaRDD<String> blankWordsRemoved = justWords.filter(word -> word.trim().length() > 0);
+	
+		JavaRDD<String> justInterestingWords = blankWordsRemoved.filter( word -> Util.isNotBoring(word));
+		
+		JavaPairRDD<String, Long> pairRdd = justInterestingWords.mapToPair( word -> new Tuple2<String, Long>(word, 1L));
+	
+		JavaPairRDD<String, Long> totals = pairRdd.reduceByKey((value1, value2) -> value1 + value2);
+
+		JavaPairRDD<Long, String> switched = totals.mapToPair(tuple -> new Tuple2<Long, String> (tuple._2, tuple._1 ));
+
+		JavaPairRDD<Long, String> sorted = switched.sortByKey(false);
+		
+
+		sc.close();
+	
+	}
+	
+}

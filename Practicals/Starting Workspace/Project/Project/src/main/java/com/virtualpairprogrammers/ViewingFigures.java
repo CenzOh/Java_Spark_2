@@ -1,3 +1,4 @@
+//Finally looking at in Lesson 38
 //package main.java.com.virtualpairprogrammers;
 package com.virtualpairprogrammers;
 
@@ -10,6 +11,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
+import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 
 import scala.Tuple2;
@@ -30,7 +32,14 @@ public class ViewingFigures
 		JavaSparkContext sc = new JavaSparkContext(conf);
 		
 		// Use true to use hardcoded data identical to that in the PDF guide.
-		boolean testMode = true;
+		boolean testMode = true; //can put to false after lesson 47 to test it on big data
+	/* OUTPUT for big data of the three views csv:
+	 * (5964, Spring Boot Microservices)
+	 * (5940, Spring Remoting and Webservices)
+	 * 
+	 * (2044, Java Fundamentals)
+	 * (716, HTML5)
+	 */
 		
 		JavaPairRDD<Integer, Integer> viewData = setUpViewDataRdd(sc, testMode);
 		JavaPairRDD<Integer, Integer> chapterData = setUpChapterDataRdd(sc, testMode);
@@ -48,10 +57,64 @@ public class ViewingFigures
  * Note that we ARE in test mode so all results should come out to agree with what we have on the captions. Note that the ordering may be different. Output is good.
  */
 		
-		//Step 1 - remove any duplicated views!
+	//Step 1 - remove any duplicated views!
 		viewData = viewData.distinct(); //no need to make a new variable, we can reassign it
 		viewData.foreach(System.out::println);; //sanity check, make sure user 13 watching chapter 96 occurs ONCE.
 //part of lesson 39. Using distinct method to remove any form of duplicates
+		
+	//Step 2 - get course Ids into the RDD Lesson 40
+		viewData = viewData.mapToPair(row -> new Tuple2<Integer, Integer>(row._2, row._1)); //flip transformation;
+		viewData.foreach(System.out::println); //sanity check
+		
+		JavaPairRDD<Integer, Tuple2<Integer, Integer>> joinedRdd = viewData.join(chapterData); //join to original chapter Data not the one with the counts
+		joinedRdd.foreach(System.out::println); //sanity check
+		
+	//Step 3 - dont need chapterIds, set up for a reduce (hardest step! Because we have to deal with Tuple2s) Lesson 41
+		JavaPairRDD<Tuple2<Integer, Integer>, Long> step3 = joinedRdd.mapToPair( row -> {
+			Integer userId = row._2._1; //lets set these explicitly, easier to understand ._2 to get the tuple, ._1 to get userID
+			Integer courseId = row._2._2; //same idea, ._2 to get tuple ._2 to get courseID
+			return new Tuple2<Tuple2<Integer, Integer>, Long>( new Tuple2<Integer, Integer>(userId, courseId), 1L); //((14,1),1). ((userID, courseId), count).
+		});
+		step3.foreach(System.out::println); //sanity check
+		
+	//Step 4 - count how many views for each user per course. should be easier now! Lesson 42
+		step3 = step3.reduceByKey((value1, value2) -> value1 + value2); //reduce method to count the views. Remember views is a long
+		step3.foreach(System.out::println);; //should get a count of the views.
+		
+	//Step 5 - remove the user ids Lesson 43
+		JavaPairRDD<Integer, Long> step5 = step3.mapToPair(row -> new Tuple2<Integer, Long>(row._1._2, row._2 )); //int is the course, long is the count/views
+		//first value, ._1 to get the Tuple, ._2 to get course ID. Second value, ._2 to get the views
+		step5.foreach(System.out::println); //(3,1). (courseId, views)
+		
+	//Step 6 - add in the total chapter count Lesson 44
+		JavaPairRDD<Integer, Tuple2<Long, Integer>> step6 = step5.join(chapterCountRdd);
+		step6.foreach(System.out::println); //(1,(1,3)). (courseId, (views, of))
+		
+	//Step 7 - convert to percentage
+		JavaPairRDD<Integer, Double> step7 = step6.mapValues(value -> (double)value._1 / value._2); //casting to double allows us to do floating point operation instead of int division
+		step7.foreach(System.out::println); //(3, 0.1) (courseId, percent)
+		
+	//Step 8 - convert to scores
+		JavaPairRDD<Integer, Long> step8 = step7.mapValues( value -> {
+			if (value > 0.9) return 10L;
+			if (value > 0.5) return 4L; //dont need to do < 0.9 because lambda would return the value if it was greater than 0.9
+			if (value > 0.25) return 2L;
+			return 0L;
+		});
+		step8.foreach(System.out::println); //(2,10) (courseId, score)
+		
+	//Step 9 - add up total scores
+		step8 = step8.reduceByKey((value1, value2) -> value1 + value2);
+		step8.foreach(System.out::println); //(1,6) (courseId, totalScore);
+		
+	//Step 10 - join with titles rdd
+		JavaPairRDD<Integer, Tuple2<Long, String>> step10 = step8.join(titlesData);
+		step10.foreach(System.out::println); //(2,(10, Work faster harder smarter until you drop)). (courseId, (totalScore, title))
+		
+	//Step 11 - sort by score
+		JavaPairRDD<Long, String> step11 = step10.mapToPair(row -> new Tuple2<Long, String>(row._2._1, row._2._2));
+		//Long for the totalScore. String for the Title. key, ._2 gets the Tuple, ._1 gets the totalscore. value, ._2 gets Tuple, ._2 gets title.
+		step11.sortByKey(false).collect().forEach(System.out::println); //false for it to sort by ascending. (10, Work faster...) (score, title).
 		
 		sc.close();
 	}

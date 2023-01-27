@@ -1,0 +1,92 @@
+//Lesson 51
+package com.virtualpairprogrammers;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Scanner;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaPairRDD;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.api.java.Optional;
+import org.spark_project.guava.collect.Iterables;
+
+import scala.Tuple2;
+
+public class Lesson51 {
+	
+	public static void main(String[] args) {
+
+	
+		//Lesson 51 Shuffles
+/* Shuffles are always an expensive operation. Best advice would be to avoid shuffling. SIlly tho since we cant avoid them in any non-trivial spark job. If you need to do a shuffle, 
+ * then you need to do a shuffle. Think carefully WHEN you do a wide transformation in our job. Ex - get a report that counts num of fatal log messages over period of this log.
+ * We could have done the steps we had seen. And now we could have gone in, get key of fatal, count num of elements, get answer!
+ * 
+ * Although there is MAJOR performance improvement we can make! We did the shuffling and then ignore all the WARNs and ERRORs just go straight to FATALs. More sensible opt is to 
+ * ignore the others in EARLY stages of job since we are interested in fatals. Do this:
+ * filter (line -> line.startsWith("FATAL"))
+ * This would have ended with an RDD that has two FATALs in two diff partitions and the other 4 partitions are empty. Smaller amount of data and we can do whatever grouping
+ * we want! So by doing groupByKey() we have less data to shuffle. With more complex spark jobs, may not be easy to twll when we have done a wide transformation too early.
+ * Good reason why Spark UI is helpful guide to where we have made some performance blunders.
+ * Lets write this in code, instructor called the file ParitionTesting, Ill write it here first.
+ * Apparently this file should be included and the bigLog.txt under resources.
+ */
+	
+		System.setProperty("hadoop.home.dir", "c:/hadoop"); 
+		Logger.getLogger("org.apache").setLevel(Level.WARN); 
+		
+		SparkConf conf = new SparkConf().setAppName("startingSpark").setMaster("local[*]"); 
+		JavaSparkContext sc = new JavaSparkContext(conf);
+		
+	//Q: How will initialRdd be partitioned?
+	//A: 64mb blocks (at time of recording) so about 6 partitions
+		JavaRDD<String> initialRdd = sc.textFile("src/main/resources/bigLog.txt");	
+	//key: log level
+	//value: date
+		System.out.println("Initial RDD Partition SIze: " + initialRdd.getNumPartitions()); //outputs num of partitions spark determined for RDD
+		
+		JavaPairRDD<String, String> warningsAgainstDate = initialRdd.mapToPair( inputLine -> {
+			String[] cols = inputLine.split(":"); //remember this is a narrow transformation, NO shuffling
+			String level = cols[0];
+			String date = cols[1];
+			return new Tuple2<>(level, date);
+		});
+		
+		System.out.println("After narrow transformation we have " + warningsAgainstDate.getNumPartitions() + " parts");
+		//output num of partitions AFTER transformation, num should be same, no repartitioning going on.
+		
+		//Now we are going to do a "wide" transformation
+		JavaPairRDD<String, Iterable<String>> results = warningsAgainstDate.groupByKey(); //expensive operation with lots of shuffling
+		System.out.println(results.getNumPartitions() + " partitions after the wide transformation");
+		//output num of partitions after wide transformation. num doesnt change again its just that most partitions will be empty
+		
+		results.foreach(it -> System.out.println("key " + it._1 + " has " + Iterables.size(it._2)+ " elements")); //loop trhough each key and output elements in resulting value
+		
+/* If we have a previous run in console, make sure to hit return and the stop button should NOT light up. Othersie cant get the web UI. Lets run it!
+ * After running, we can see it took several seconds to run.
+ * 11 partitions on EACH sys out
+ * 
+ * key WARN has 499886 elements
+ * key ERROR has 5001114
+ * 
+ * We were told on the chapter with Amazon EMR that what we see here is logging. THe 0 is the num of completed tasks. WE ahve 11 tasks (total) so there were 11 partitions.
+ * (0 + 4) / 11
+ * (1 + 5) / 11 num of tasks compelted keesp inc. Now look at stage 0 and 1. Look at spark UI to see what stages are about. 
+ * 
+ */
+
+		
+		Scanner scanner = new Scanner(System.in);
+		scanner.nextLine();
+		
+
+		sc.close();
+	
+	}
+	
+}

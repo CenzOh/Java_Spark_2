@@ -56,29 +56,29 @@ public class Lesson39 {
 		
 //Here I will write MY implementation / on my own BEFORE going over solution
 //Step 1 - remove duplicated data - given to us
-		viewData = viewData.distinct();
-		viewData.foreach(System.out::println);
+//		viewData = viewData.distinct();
+//		viewData.foreach(System.out::println);
 		
 //Step 2 - join to get COurse ID in RDD
-		JavapairRDD<Tuple2<Integer, Integer>> newRdd = viewData.map( row -> new Tuple2<>(row._2,row._1)); //something like this to swap chapter ID and user ID
-		JavaPairRDD<Integer, Tuple2<Integer, String>> joinedRdd = newRdd.join(chapterData); //something like this to join course IDs with chapter and user IDs
+//		JavapairRDD<Tuple2<Integer, Integer>> newRdd = viewData.map( row -> new Tuple2<>(row._2,row._1)); //something like this to swap chapter ID and user ID
+//		JavaPairRDD<Integer, Tuple2<Integer, String>> joinedRdd = newRdd.join(chapterData); //something like this to join course IDs with chapter and user IDs
 		
 //step 3 - drop course ID and count each occurrence
-		JavaPairRDD joinedRdd<Tuple2<Integer, Integer>(level, 1L); //we have to do something to change the chapterID column to litterally just be value 1 for count purpose
+//		JavaPairRDD joinedRdd<Tuple2<Integer, Integer>(level, 1L); //we have to do something to change the chapterID column to litterally just be value 1 for count purpose
 		
 //step 4 - count views for user / course
-		JavaPairRDD<String, Long> sumsRdd = pairRdd = pairRdd.reduceByKey( (value1, value2) -> value1 + value2); //then we have to add the counts to get sum with reduce
+//		JavaPairRDD<String, Long> sumsRdd = pairRdd = pairRdd.reduceByKey( (value1, value2) -> value1 + value2); //then we have to add the counts to get sum with reduce
 		
 //step 5 - drop userID 
-		JavaPairRDD<Integer, Integer> newViewsRdd = sumsRdd.map(); //then we do another thing to map and say just have course ID and views
+//		JavaPairRDD<Integer, Integer> newViewsRdd = sumsRdd.map(); //then we do another thing to map and say just have course ID and views
 		
 //step 6 - of how many chapters
-		JavaPairRDD<Integer, Tuple2<Integer, Integer>> chapterCountRdd = chapterData.sum(); //grab total num of chapters we want views of. I believe get chap count with sum method
-		JavaPairRDD<Integer, Integer> chapterCountRdd = chapterData.maptoPair( row -> new Tuple2<Integer, Integer>(row._2, 1)) //this was given to us I believe this is it
-				.reduceByKey( (value1, value2) -> value1 + value2);
+//		JavaPairRDD<Integer, Tuple2<Integer, Integer>> chapterCountRdd = chapterData.sum(); //grab total num of chapters we want views of. I believe get chap count with sum method
+//		JavaPairRDD<Integer, Integer> chapterCountRdd = chapterData.maptoPair( row -> new Tuple2<Integer, Integer>(row._2, 1)) //this was given to us I believe this is it
+//				.reduceByKey( (value1, value2) -> value1 + value2);
 		
 //step 7 - convert to percentages.
-		JavaPairRDD<Integer, Double> percentageRdd; //another thing we have to do so we just divide the views by total num of chapters
+//		JavaPairRDD<Integer, Double> percentageRdd; //another thing we have to do so we just divide the views by total num of chapters
 		
 //step 8 - convert to scores
 		//I believe we would have to do something with comparing percentage with value.Ex - 0.6 would be >50% but < 90% so that should turn into a 4. Think we would
