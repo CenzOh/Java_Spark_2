@@ -1,0 +1,68 @@
+//Lesson 51
+package com.virtualpairprogrammers;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Scanner;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaPairRDD;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.api.java.Optional;
+import org.spark_project.guava.collect.Iterables;
+
+import scala.Tuple2;
+
+public class Lesson51 {
+	
+	public static void main(String[] args) {
+
+	
+		//Lesson 52 Dealing with Key Screws
+/* 
+ * 
+ */
+	
+		System.setProperty("hadoop.home.dir", "c:/hadoop"); 
+		Logger.getLogger("org.apache").setLevel(Level.WARN); 
+		
+		SparkConf conf = new SparkConf().setAppName("startingSpark").setMaster("local[*]"); 
+		JavaSparkContext sc = new JavaSparkContext(conf);
+		
+	//Q: How will initialRdd be partitioned?
+	//A: 64mb blocks (at time of recording) so about 6 partitions
+		JavaRDD<String> initialRdd = sc.textFile("src/main/resources/bigLog.txt");	
+	//key: log level
+	//value: date
+		System.out.println("Initial RDD Partition SIze: " + initialRdd.getNumPartitions()); //outputs num of partitions spark determined for RDD
+		
+		JavaPairRDD<String, String> warningsAgainstDate = initialRdd.mapToPair( inputLine -> {
+			String[] cols = inputLine.split(":"); //remember this is a narrow transformation, NO shuffling
+			String level = cols[0];
+			String date = cols[1];
+			return new Tuple2<>(level, date);
+		});
+		
+		System.out.println("After narrow transformation we have " + warningsAgainstDate.getNumPartitions() + " parts");
+		//output num of partitions AFTER transformation, num should be same, no repartitioning going on.
+		
+		//Now we are going to do a "wide" transformation
+		JavaPairRDD<String, Iterable<String>> results = warningsAgainstDate.groupByKey(); //expensive operation with lots of shuffling
+		System.out.println(results.getNumPartitions() + " partitions after the wide transformation");
+		//output num of partitions after wide transformation. num doesnt change again its just that most partitions will be empty
+		
+		results.foreach(it -> System.out.println("key " + it._1 + " has " + Iterables.size(it._2)+ " elements")); //loop through each key and output elements in resulting value
+		
+		Scanner scanner = new Scanner(System.in);
+		scanner.nextLine();
+		
+
+		sc.close();
+	
+	}
+	
+}
