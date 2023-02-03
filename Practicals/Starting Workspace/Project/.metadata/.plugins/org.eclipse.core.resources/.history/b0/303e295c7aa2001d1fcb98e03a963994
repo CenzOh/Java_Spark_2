@@ -1,0 +1,21 @@
+package com.virtualpairprogrammers;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
+public class Lesson57 {
+	
+/* Lesson 57 SparkSQL getting started
+ * 
+ */
+	
+	@SupressWarnings("resource") //boiler plate start
+	public static void main(String[] args) {
+		System.setProperty("hadoop.home.dir", "c:/hadoop");
+		Logger.getLogger("org.apache").setLevel(Level.WARN);
+	
+	
+//		SparkConf conf = new SparkCOnf().setAppName("startingSpark").setMaster("local[*]");
+//		JavaSparkContext sc = new JavaSparkContext(conf);
+	}
+}

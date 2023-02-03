@@ -1,0 +1,29 @@
+package com.virtualpairprogrammers;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
+public class Lesson57 {
+	
+/* Lesson 57 SparkSQL getting started
+ * We have been previously working on various experiments in Main.java. For this section we will modify the code in that section (I will still put code in different java files)
+ * for easier readibility. There is another starting workspace with up to date code in case we skipped the first section and jumped straight into this section. 
+ * In section 1, one of the joys of working with spark is that there are not a lot of dependencies that we need / no need for specific software. We simply have a meavn pom.xml file
+ * and we can see in there the dependencies are basic, spark core, spark SQL (we added previously for this part of the course), and apache hadoop (access HDFS file system).
+ * 
+ * In case you skipped first section, what we have to do is run the pom.xml as a maven build, goal is `eclipse:eclipse` so eclipse can download all the jar files required for spark.
+ * The previous versions we were given was version 2.0 which is an old version of Spark. As of this video, you can check the apache spark page and see there are a lot of current versions
+ * latest during the recording is spark 2.3.2. As of when I am writing this we can use Spark 3. Would make sense to upgrade these versions, you can easily do that in the pom.xml file 
+ * just change <version>2.3.2</version>
+ */
+	
+	@SuppressWarnings("resource") //boiler plate start
+	public static void main(String[] args) {
+		System.setProperty("hadoop.home.dir", "c:/hadoop");
+		Logger.getLogger("org.apache").setLevel(Level.WARN);
+	
+	
+//		SparkConf conf = new SparkCOnf().setAppName("startingSpark").setMaster("local[*]");
+//		JavaSparkContext sc = new JavaSparkContext(conf);
+	}
+}

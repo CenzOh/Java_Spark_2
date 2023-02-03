@@ -1,0 +1,45 @@
+package com.virtualpairprogrammers;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
+
+public class Lesson60 {
+	
+/* Lesson 60
+ * 
+ */
+	
+	@SuppressWarnings("resource") 
+	public static void main(String[] args) {
+		System.setProperty("hadoop.home.dir", "c:/hadoop");
+		Logger.getLogger("org.apache").setLevel(Level.WARN);
+	
+		SparkSession spark = SparkSession.builder().appName("testingSql").master("local[*]")
+				.config("spark.sql.warehouse.dir", "file:///c:/tmp/")
+				.getOrCreate();
+		
+		Dataset<Row> dataset = spark.read().option("header",  true).csv("src/main/resources/exams/students.csv");
+
+		Dataset<Row> modernArtResults = dataset.filter("subject = 'Modern Art' "); //a string inside single quotation marks
+		
+		modernArtResults.show(); //this will cause data to be shuffled around etc, execution plan will start at this point because this is an action. Prior line sets up execution plan.
+		
+/* student_id | Exam_center_id |  subject | year | quarter | Score | grade
+ * 			1 | 			 1 |Modern Art| 2005 | 		 1 |    32 |     E
+ * 			2 | 			 1 |Modern Art| 2005 | 		 1 |    55 |     C
+ * ... subset of output. It works tho! We may have guessed that we can chain our conditions together. Ex - we want all modern art subjects BUT from year 2007 and onwards. We
+ * are getting results from 2005
+ */
+		Dataset<Row> modernArtResults2 = dataset.filter("subject = 'Modern Art' AND year >= 2007"); //use AND clause for multi conditions
+		modernArtResults2.show();
+		
+//it works, student IDs start around 42,000. So it had to go in deep the dataset to find results.
+		
+		
+//		spark.close(); //close method on spark session unsure why not compilin
+	
+	}
+}

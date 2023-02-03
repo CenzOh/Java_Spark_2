@@ -1,0 +1,46 @@
+package com.virtualpairprogrammers;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
+
+public class Lesson59 {
+	
+/* Lesson 59 Filters using Expressions
+ * LAst time we looked at basics of datasets which are basically a collection of rows. We also did basics of a row by extracting the first row and looking at some values.
+ * However this is not very realistic. We need to do operations to filter down to the data we are interested in or aggregations across entire dataset.
+ * Lets say we want to filter this dataset so we can end up with a dataset where all exam results are for Modern Art. There may not be a lot in first 20 rows.
+ * Look below on how to do this:
+ */
+	
+	@SuppressWarnings("resource") 
+	public static void main(String[] args) {
+		System.setProperty("hadoop.home.dir", "c:/hadoop");
+		Logger.getLogger("org.apache").setLevel(Level.WARN);
+	
+		SparkSession spark = SparkSession.builder().appName("testingSql").master("local[*]")
+				.config("spark.sql.warehouse.dir", "file:///c:/tmp/")
+				.getOrCreate();
+		
+		Dataset<Row> dataset = spark.read().option("header",  true).csv("src/main/resources/exams/students.csv");
+
+		dataset.show();
+
+		long numberOfRows = dataset.count(); 
+		System.out.println("There are " + numberOfRows + " records");
+		
+		Row firstRow = dataset.first(); //takes first row of dataset. 
+		
+		String subject = firstRow.getAs("subject").toString();
+		System.out.println(subject); //Math. This is what we expected to see!
+	
+		int year = Integer.parseInt(firstRow.getAs("year")); //2005. So now it works and converts it into an int instead of being a string.
+		System.out.println("The year was " + year); //so overall be mindful about data type conversion. Everything comes back as raw string when using CSV files
+		
+		
+//		spark.close(); //close method on spark session unsure why not compilin
+	
+	}
+}

@@ -1,12 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-    <fullyQualifiedTypeName name="org.apache.log4j.Logger"/>
-    <fullyQualifiedTypeName name="org.apache.log4j.Level"/>
     <fullyQualifiedTypeName name="java.util.Arrays"/>
-    <fullyQualifiedTypeName name="java.util.ArrayList"/>
     <fullyQualifiedTypeName name="org.apache.spark.api.java.JavaRDD"/>
     <fullyQualifiedTypeName name="com.sun.java_cup.internal.runtime.Scanner"/>
+    <fullyQualifiedTypeName name="org.spark_project.guava.collect.Iterables"/>
+    <fullyQualifiedTypeName name="org.apache.spark.storage.StorageLevel"/>
     <fullyQualifiedTypeName name="java.util.Scanner"/>
     <fullyQualifiedTypeName name="java.lang.System"/>
-    <fullyQualifiedTypeName name="org.spark_project.guava.collect.Iterables"/>
+    <fullyQualifiedTypeName name="org.apache.log4j.Level"/>
+    <fullyQualifiedTypeName name="org.apache.log4j.Logger"/>
+    <fullyQualifiedTypeName name="org.apache.spark.sql.SparkSession"/>
+    <fullyQualifiedTypeName name="org.apache.spark.sql.Row"/>
+    <fullyQualifiedTypeName name="org.apache.spark.sql.Column"/>
+    <fullyQualifiedTypeName name="java.util.ArrayList"/>
+    <fullyQualifiedTypeName name="java.util.List"/>
+    <fullyQualifiedTypeName name="org.apache.spark.sql.RowFactory"/>
+    <fullyQualifiedTypeName name="org.apache.spark.sql.types.StructField"/>
+    <fullyQualifiedTypeName name="org.apache.spark.sql.types.DataTypes"/>
+    <fullyQualifiedTypeName name="org.apache.spark.sql.types.Metadata"/>
+    <fullyQualifiedTypeName name="org.apache.spark.sql.Dataset"/>
+    <fullyQualifiedTypeName name="org.apache.spark.sql.functions"/>
 </qualifiedTypeNameHistroy>

@@ -1,0 +1,50 @@
+package com.virtualpairprogrammers;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.spark.sql.Column;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
+
+public class Lesson61 {
+	
+/* Lesson 61 Filters using COlumns
+ * We have seen two ways to do the filter. SQL way is most natural way honestly. Second is more traditional lambda way. We will get rid of lambda version. Lets look at a third approach
+ * which is a bit more complex but it is a programming style we use a lot throughout rest of course. More programmatic approach to do the filter.
+ * If we had something more dynamic, add some AND, OR clauses on a particular logic, will be hard with the lambda approach, nasty string concatenation.
+ */
+	
+	@SuppressWarnings("resource") 
+	public static void main(String[] args) {
+		System.setProperty("hadoop.home.dir", "c:/hadoop");
+		Logger.getLogger("org.apache").setLevel(Level.WARN);
+	
+		SparkSession spark = SparkSession.builder().appName("testingSql").master("local[*]")
+				.config("spark.sql.warehouse.dir", "file:///c:/tmp/")
+				.getOrCreate();
+		
+		Dataset<Row> dataset = spark.read().option("header",  true).csv("src/main/resources/exams/students.csv");
+
+// sql
+//		Dataset<Row> modernArtResults2 = dataset.filter("subject = 'Modern ARt' AND year >= 2007");
+		
+// lambda
+//		Dataset<Row> modernArtResults = dataset.filter( row -> row.getAs("subject").equals("Modern Art")
+//															&& Integer.parseInt(row.getAs("year")) >= 2007);
+
+/* Third approach, more programmatic, wont be concatenating a string. Revolves around the col class. Havent seen it yet. This class represents a col within our datasets.
+ * Simply call the .col() method on our dataset and type in which col name. Also be careful with the import, there are four different column classes in spark API. We want the one
+ * org.apache.spark.sql() We can use this object in an expression
+ */
+		Column subjectColumn = dataset.col("subject");
+		Dataset<Row> modernArtResults = dataset.filter(subjectColumn.equalsTo( "Modern Art" )
+																	.and(yearColumn.geq(2007)) );
+		
+		
+		modernArtResults.show();		
+		
+//		spark.close(); //close method on spark session unsure why not compiling
+	
+	}
+}

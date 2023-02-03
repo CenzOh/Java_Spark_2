@@ -1,0 +1,71 @@
+package com.virtualpairprogrammers;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
+
+public class Lesson58 {
+	
+/* Lesson 58
+ *
+ */
+	
+	@SuppressWarnings("resource") //boiler plate start
+	public static void main(String[] args) {
+		System.setProperty("hadoop.home.dir", "c:/hadoop");
+		Logger.getLogger("org.apache").setLevel(Level.WARN);
+	
+//		SparkConf conf = new SparkCOnf().setAppName("startingSpark").setMaster("local[*]");
+//		JavaSparkContext sc = new JavaSparkContext(conf);
+
+/* boilerplate end, pretty much all we need to begin! SparkConf and Spark Context lines we have seen with RDDs. All the work we did in RDD library was done in Spark Context. We will NOT use
+ * them again but we can compare what we need to do to work in Spark SQL. Similar recipe. Just that end result will end up with SparkSession. This is how we will operate SQL.
+ */
+		SparkSession spark = SparkSession.builder().appName("testingSql").master("local[*]")
+				.config("spark.sql.warehouse.dir", "file:///c:/tmp/")
+				.getOrCreate();
+		
+/* We can do all this in one fluent line of code. Do .builder() first. Then .appName will name the app, this is optional. Name will appear in performance analysis and logs
+ * instead of doing .setAppName() we simply do .appName(). Same with master. Before it was .setMaster() and now we just call .master(). Specify num of cores like before.
+ * One thing we need to add (windows specific) we will add on separate line, config method. In config() we have to pass in a parameter which is the directory of some temp files stored by spark sql
+ * the dir does not have to already exist. Second param is this directory while first is the spark.sql.warehouse.dir. Finish with call to get or create method which returns the instance
+ * of the spark session objects.
+ * Next thing to do is point the spark session objects with the data we are working with. Do this with .read() but we have to also further tell spark what TYPE of data we are dealing with.
+ * .csv() is for reading in csv files which is what we have. Other methods like JDBC, connect to database, .json(), .text() for text files. Pick .csv() for now. The argument for this is a
+ * reference to the file we are reading so again, similar to previous section.
+ */
+		Dataset<Row> dataset = spark.read().option("header",  true).csv("src/main/resources/exams/students.csv");
+		
+/* There is ANOTHER thing we have to do! Review the structure of the data and we can see that we have a header line. HEaders are optional but advantage of having a header is that Spark SQL
+ * can read the line. When we start manipulating data, we can refer to the data by the col header which is super useful. By default, spark will assume there is no header line.
+ * We have to call the method before CSV. use the option method so we can set some options. One of them is called header, just a string and set to value of true: .option("header", true)
+ * The resulting object we will get back from this is called a Data Set. A DataSet in Spark SQL is an abstraction that represents our data and think of the dataset like a table containing our
+ * data. We have to declare the object we can use the quick fix, create local variable dataset. We will talk about what the generic is, you can tell the Dataset contains a series of rows.
+ * When we do things like reading in data in an RDD, we are not actually reading the data. We are setting up an in-memory structure representing the data. ANd it is only when we reach an action
+ * that the work needs to be done.
+ * We need to go further with this data set before we can actually see anything interesting happening next time. There is a very useful method on datasets, was not in RDD version of spark
+ */
+		dataset.show();
+/* DONT HAVE THE CSV SO HERE IS WHAT IT SHOULD SAY:
+ * student_id | exam_center_id | subject | year | quarter | score | grade
+ * 			1 | 			 1 |    Math | 2005 |       1 |    41 |     D
+ * ...
+ * 
+ * .show() shows the top 20 rows. What if we want to get a count of how many rows are in the dataset? USe the .count() method
+ */
+		long numberOfRows = dataset.count(); //int doesnt work here, have to use long since we wil get a big number!!
+		System.out.println("There are " + numberOfRows + " records"); //2,080,223 records WOW!! Fairly big data set to work with.
+		
+/* Real quick we did NOT think about what was going on with the count method under the hood. In real life we dont have to think about it but worth pausing to reflect.
+ * In previous section with RDDs, we looked at operations like map reduce. They typically use a count on big data. Although we use this dataset which feels like an in memory object we are
+ * still with big data, still working with RDDs. They are hidden away inside the dataset. We can call count and not think deeply about what goes on under the hood just know there is an RDD
+ * underneath this. The implementation of this count could well be an operation like map reduce. In this API we do not need to know exactly how the count is implemented.
+ * WE just know it will be implemented as distributed count across multiple nodes.
+ */
+		
+//		spark.close(); //close method on spark session unsure why not compiling
+	
+	}
+}
