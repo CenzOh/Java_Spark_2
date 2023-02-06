@@ -1,0 +1,93 @@
+package com.virtualpairprogrammers;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.RowFactory;
+import org.apache.spark.sql.SparkSession;
+import static org.apache.spark.sql.functions.*; //now we dont have to explicitly refer to .functions()
+import org.apache.spark.sql.types.DataTypes;
+import org.apache.spark.sql.types.Metadata;
+import org.apache.spark.sql.types.StructField;
+import org.apache.spark.sql.types.StructType;
+
+
+public class Lesson70 {
+	
+/* Lesson 70 How does a pivot table work?
+ * Will show to how to make one in Spark SQL. Previously we made the report from a million logging records. Looks okay because hard to see any underlying patterns. 
+ */
+	
+	@SuppressWarnings("resource") 
+	public static void main(String[] args) {
+		System.setProperty("hadoop.home.dir", "c:/hadoop");
+		Logger.getLogger("org.apache").setLevel(Level.WARN);
+	
+		SparkSession spark = SparkSession.builder().appName("testingSql").master("local[*]")
+				.config("spark.sql.warehouse.dir", "file:///c:/tmp/")
+				.getOrCreate();
+				
+		Dataset<Row> big_dataset = spark.read().option("header", true).csv("Src/main/resources/bigLog.txt");
+		
+		big_dataset.createOrReplaceTempView("logging_table");	
+		
+// SQL reference
+//		Dataset<Row> results = spark.sql
+//				("select level, date_format(datetime, 'MMMM') as month, count(1) as total "
+//						+ "from logging_table group by level, month order by cast(first(date_format(datetime, 'M')) as int), level"); 
+		
+// Java API / DataFrame version
+
+		Dataset<Row> bad_big_dataset = big_dataset.select(col("level"), 
+										date_format(col("datetime"), "MMMM").alias("month"), 
+										date_format(col("datetime"), "M").alias("monthnum") ); //updated to include numerical month so we can order by numerical month
+		bad_big_dataset = big_dataset.groupBy(col("level"), col("month")).count(); //can call groupby method. group by level AND month. do .count() method to return back dataset
+	
+/* OUTPUT:
+ * level | month | Count
+ * WARN | June | 8191
+ * INFO | June | 29143
+ * ...
+ * 
+ * Great now all we have to do is get the dataset correctly ordered like we did with SQL. 
+ */
+		bad_big_dataset = big_dataset.orderBy("monthnum"); //orderBY() takes one or more column references. We want to order by the month in numerical form
+
+/* OUTPUT: Exception error. Reason is it can not resolve month num given input cols are level, month, count. We did have a month num here before group by. Same root cause that we saw earlier
+ * in SQL version. SO think about it, we are selecting level and month. We also wanted to include monthnum but month num is a group of values:
+ * 
+ * Level | month | count(1) | monthnum
+ * WARN | DECEMBER | 2 | [12,12]
+ * 
+ * Spark SQL was saying it doesnt know what we want it to do with the big group of values. Advise is, any col not part of the grouping must have an aggregation function performed on it.
+ * Same thing here. But exception doesnt tell us that. When we do the group, anything that is not part of the group is discarded from the dataset. SO the dataset we have here
+ * doesnt have month num anymore. We fixed this in SQL was adding a call to first aggregation function. Now think about it, the month numbers will always match. If January, always be 1.
+ * what if we add month num to group clause? We are really grouping by the month and month num. By doing this monthnum will persist in the final dataset.
+ */
+		
+
+		
+		Dataset<Row> bad_big_dataset2 = big_dataset.select(col("level"), 
+				date_format(col("datetime"), "MMMM").alias("month"), 
+				date_format(col("datetime"), "M").alias("monthnum").cast(DataTypes.IntegerType) ); //added cast to make monthnum an int. Can also do .cast("int") instead of java objs.
+		
+		bad_big_dataset2= big_dataset.groupBy(col("level"), col("month"), col("monthnum")).count();
+
+		bad_big_dataset2 = big_dataset.orderBy(col("monthnum") ); //wrapping monthnum around col() 
+	
+		
+		bad_big_dataset2 = bad_big_dataset2.drop(col("monthnum")); //drop monthnum. We can wrap them with col() or just enter them as strings. Make sure to reassign to dataset object.
+		
+		bad_big_dataset2 = big_dataset.orderBy(col("monthnum"), col("level") );//sorting by log level as well.
+		
+		
+		big_dataset.show(100); 
+		
+		spark.close();
+	
+	}
+}
