@@ -1,0 +1,8 @@
+package com.virtualpairprogrammers;
+
+import java.io.Serializable;
+import java.util.comparator;
+
+public class SerializeableCOmparator {
+
+}

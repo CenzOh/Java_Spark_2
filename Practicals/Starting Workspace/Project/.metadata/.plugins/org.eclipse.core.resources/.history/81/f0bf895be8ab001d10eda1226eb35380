@@ -1,0 +1,82 @@
+package com.virtualpairprogrammers;
+
+import java.util.Scanner;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaPairRDD;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
+
+import scala.Tuple2;
+
+
+public class Lesson84 {
+	
+/* Lesson 84 SparkSQL Performance vs RDDs
+ * One last comparison we would like to make is using Spark SQL apis either SPL syntax of java api dataset / dataframe. WE have seen performance of one over the other.
+ * We know under the hood, code generated running and transformations are applied to RDDs. Spark SQL is the domain specific language to help us create our RDDs and we can think at
+ * higher level of abstraction and think like a data scientist rather than a computer programmer. Instructor has created a new class called LogCountRDDVersion. I will write that code
+ * below
+ */
+	
+	@SuppressWarnings("resource") 
+	public static void main(String[] args) {
+		System.setProperty("hadoop.home.dir", "c:/hadoop");
+		Logger.getLogger("org.apache").setLevel(Level.WARN);
+	
+		SparkConf conf = new SparkConf().setMaster("local[*]").setAppName("startingSpark");
+		JavaSparkContext sc = new JavaSparkContext(conf);
+		JavaRDD<String> input = sc.textFile("Src/main/resources/biglog.txt");
+		
+		// remove the csv header
+		input = input.filter(line -> !line.startsWith("level,datetime"));
+		
+		JavaPairRDD<String, Long> pairs = input.mapToPair(rawValue -> {
+			String[] csvFields = rawValue.split(",");
+			String level = csvFields[0];
+			String date = csvFields[1];
+			String month = rawDateToMonth(date);
+			String key = level + ":" + month;
+			return new Tuple2<>(key, 1L);
+		});
+		
+		JavaPairRDD<String, Long> resultsRdd = pairs.reduceByKey((value1, value2) -> value1 + value2);
+		
+// SQL reference
+//		dataset.createOrReplaceTempView("logging_table"); 
+//
+//		Dataset<Row> results = spark.sql
+//			("select level, date_format(datetime, 'MMMM') as month, count(1) as total, date_format(datetime, 'M') as monthnum "
+//			+ "from logging_table group by level, month, monthnum order by monthnum, level");
+//		results = results.drop("monthnum"); 
+//	
+//		results.show(100);
+//		
+//		results.explain();
+	
+
+			
+// Java API / DataFrame version		
+//		dataset = dataset.select(col("level"), 
+//						  date_format(col("datetime"), "MMMM").alias("month"), 
+//					  	  date_format(col("datetime"), "M").alias("monthnum").cast(DataTypes.IntegerType) );
+//	
+//		
+//		dataset = dataset.groupBy("level", "month", "monthnum").count().as("total").orderBy("monthnum");
+//		dataset = dataset.drop("monthnum");
+// 
+//		dataset.show(100);
+//		
+//		dataset.explain();
+
+		
+		Scanner scanner = new Scanner(System.in); 
+		scanner.hasNextLine();
+		
+
+		spark.close();
+	
+	}
+}

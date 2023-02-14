@@ -1,19 +1,12 @@
 package com.virtualpairprogrammers;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import org.apache.spark.sql.RowFactory;
 import org.apache.spark.sql.SparkSession;
 import static org.apache.spark.sql.functions.*; //now we dont have to explicitly refer to .functions()
 import org.apache.spark.sql.types.DataTypes;
-import org.apache.spark.sql.types.Metadata;
-import org.apache.spark.sql.types.StructField;
-import org.apache.spark.sql.types.StructType;
 
 
 public class Lesson69 {

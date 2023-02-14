@@ -1,7 +1,6 @@
 //Lesson 24
 package com.virtualpairprogrammers;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 

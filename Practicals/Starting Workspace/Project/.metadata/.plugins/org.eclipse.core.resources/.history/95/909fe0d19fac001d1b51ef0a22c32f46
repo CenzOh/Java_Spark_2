@@ -1,0 +1,15 @@
+package com.virtualpairprogrammers;
+
+public class Lesson88 {
+
+/* __________ Lesson 85 welcome to Module 3 __________
+ * 
+ * __________ Lesson 86 What is Machine Learning? __________
+ * 
+ * Chapter 1, Intro to Spark ML. In this module we will use spark from machine learning (ML). First lets explain the ideas behind ML and data science. We will use quite complex mathematics
+ * and statistical concepts but we dont have to be a good mathematician to take the course. By the end of the course, we will be able to use Spark to create great
+ * prediction models and be able to assess how good the models are.
+ * 
+ * <L
+ */
+}

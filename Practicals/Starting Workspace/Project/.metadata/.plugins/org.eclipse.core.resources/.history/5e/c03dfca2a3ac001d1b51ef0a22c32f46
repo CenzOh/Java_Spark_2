@@ -1,0 +1,40 @@
+package com.virtualpairprogrammers;
+
+public class Lesson88 {
+
+/* __________ Lesson 85 welcome to Module 3 __________
+ * 
+ * __________ Lesson 86 What is Machine Learning? __________
+ * 
+ * Chapter 1, Intro to Spark ML. In this module we will use spark from machine learning (ML). First lets explain the ideas behind ML and data science. We will use quite complex mathematics
+ * and statistical concepts but we dont have to be a good mathematician to take the course. By the end of the course, we will be able to use Spark to create great
+ * prediction models and be able to assess how good the models are.
+ * 
+ * ML is using statistical techniuqes to create models based on our data. SO using ML we should be able to take a set of data and ask spark to create a mathematical formula from it.
+ * THis formula will hopefully be a good way to represent our data.
+ * 
+ * EX: 
+ * Age | Height (cm) | Weight (kg) | NoOfReps --> Spark --> (height / 8) + (weight / 4) + (age / 2.5) = NoOfReps
+ * 23 | 180 | 88 | 55
+ * ...
+ * 
+ * If this is a good way to rep data, then we can use it to make predictions about future values or inform decisions we make. In our example, we can ask Spark to come up with a formula
+ * to predict how many reps an individual may be able to do based on the given input data. Ex - new person is 174 cm, 30 years, 84 kg, we should be able to use the formula to predict
+ * how many reps they can do. WIth the formula, it may guess 54 reps. So again, the ML process is coming up with the formula.
+ * 
+ * ML is not a new concept, instructor says he was helping mathematicians do this kind of work 15 years ago. Then, those people were called statistical model builder / date scientists.
+ * Terms still sued today. However, difference for today is that ML automates much of the process of building the model. This makes model building much easier and possible to do for non 
+ * mathematicians. There are lots of systems we can use to carry out ML such as Spark.
+ * 
+ *  Spark has advantages. We can analyze big data sets very easily. We can harness the power of using a network of machines to crunch large amounts of data very efficiently. Sparks
+ *  ML libraries are relatively easy to use and powerful. Spark does a lot of the work for us and most of the code is really just getting the data in the right format and
+ *  telling Spark to create each of the models. Running the algorithm is very little code
+ */
+	
+/* __________ Lesson 87 Coming up in this module and intro to Kaggle. __________
+ * We will look at how to use some of the common ML algorithms in Spark. We will look at 5 in this module. It will be quite easy to swap out one of the models we looked at for any 
+ * other type of model that can be useful for us.
+ * What we will NOT be doing in the module is an in-depth tutorial on statistics and data science techniques. We simply will lok at getting started but NOT generally looking at the kind
+ * of mathematical info. If you want to look at this, check the spark ML documentation. Instructor shows an example of lo
+ */
+}
