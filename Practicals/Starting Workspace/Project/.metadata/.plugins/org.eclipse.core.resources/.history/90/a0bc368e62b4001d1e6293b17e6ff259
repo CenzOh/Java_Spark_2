@@ -1,0 +1,14 @@
+package com.virtualpairprogrammers;
+
+public class Lesson102 {
+
+/* Lesson 102 Correlation Features
+ * 
+ * Idea of correlation is, we ask Spark what is correlation between sqft living (living space) and value we are trying to predict. Spakr gives us a number between -1 and 1.
+ * 0 - no correlation / no relationship
+ * 1 - strong correlation
+ * -1 - strong correlation
+ * 
+ * 1 means size of property increase, price increase. -1 means size of property increases, price DECREASES
+ */
+}

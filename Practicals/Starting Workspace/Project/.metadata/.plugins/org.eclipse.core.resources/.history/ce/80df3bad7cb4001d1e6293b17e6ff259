@@ -1,0 +1,11 @@
+package com.virtualpairprogrammers;
+
+public class Lesson104 {
+
+/* lesson 104 Data Preparation
+ * 
+ * We wont do work on our model in the chapter. Lets discuss data prep more generally and formalize the process when building the model.
+ * FIrst we aquire our data from somewhere. Extract it from a source system, make it readable format.
+ * Second is data cleaning, will talk more in a moment.
+ */
+}

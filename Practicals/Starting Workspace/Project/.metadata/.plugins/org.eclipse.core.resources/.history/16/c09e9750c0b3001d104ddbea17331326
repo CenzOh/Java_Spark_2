@@ -1,0 +1,87 @@
+package com.virtualpairprogrammers;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.spark.ml.feature.VectorAssembler;
+import org.apache.spark.ml.regression.LinearRegression;
+import org.apache.spark.ml.regression.LinearRegressionModel;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
+
+public class Lesson99 {
+
+/* Lesson 99 setting linear regression parameters
+ * 
+ * We will be talking about model fitting parameters. In last few chapters we saw the following warning:
+ * 
+ * WARN WeightedLeastSquares: regParam is zero, which might cause numerical instability and overfitting.
+ * 
+ * We must deal with this now. THis error message says we havent supplied a value for regParam. The process Spark uses how to come up with coefficients of the model to build is
+ * by using a number of different regression analysis methods. The linearRegression object, the helper obj to create the model when we call .fit(). Its really a black box.
+ * It analyzes the data we filled into the model builder, does some complex mathematics to create the linear regression model at the end. There are a number of these mathematical
+ * algorithms that take place within it like elastic net, bridge, laso, linear squares. These algorithms can take optional parameters to affect their output.
+ * 
+ * A little vague with the following since to go into more detail we need to have a better undersatnding of those advanced statistical techniques which is out of scope fo the course. 
+ * When we set up the model we can provide these parameters optionally. By providing different values for the parameters it can result in a better model. Lets experiment with the different
+ * numbers to feed in. Spark makes it easy for us to do this. What are the parameters first of all? We can find our answer in spark API documentaion under linearRegression.
+ * 
+ * org.apache.spark.ml.regression.LinearRegression class, scroll down to set methods. Can see there are a lot. Some we may be used to looking at are setAggregationDepth(), setElasticNetParam(),
+ * setEpsilon(), setRegParam(), setTol(). We can experiment and set values for these parameters. The documentation is a bit sparse tho, click on one of the methods dont really see
+ * much help. 
+ * 
+ * However, if we look at the spark general documentaion, there are some examples for linear Regression. They show a setting for the following:
+ *  .setMaxIter(10)
+ *  .setRegParam(0.3)
+ *  .setElasticNetParam(0.8)
+ *  
+ * Good starting point for which parameters to set. FOr the values, thats dependent on the shape of the data we have. But we wont have good values to pick unless we have an understanding
+ * how to interpret the shape of tehd ata. SO lets try the example.
+ */
+	
+public static void main(String[] args) {
+		
+		System.setProperty("hadoop.home.dir", "c:/hadooop"); 
+		Logger.getLogger("org.apache").setLevel(Level.WARN);
+		
+		SparkSession spark = SparkSession.builder()
+				.appName("Gym Competitors")
+				.config("spark.sql.warehouse.dir", "file:///c:/tmp/")
+				.master("local[*]")
+				.getOrCreate();
+		
+		Dataset<Row> csvData = spark.read()
+				.option("header",  true)
+				.option("inferSchema", true)
+				.csv("src/main/resources/kc_house_data.csv"); 
+
+		VectorAssembler vectorAssembler = new VectorAssembler()
+				.setInputCols(new String[] {"bedrooms", "bathrooms", "sqft_living"} )
+				.setOutputCol("features");
+		
+		Dataset<Row> modelInputData = vectorAssembler.transform(csvData)
+				.select("price", "features")
+				.withColumnRenamed("price",  "label");
+		
+//		modelInputData.show();
+		
+		Dataset<Row>[] trainingAndTestData = modelInputData.randomSplit(new double[] {0.8, 0.2});
+		Dataset<Row> trainingData = trainingAndTestData[0]; 
+		Dataset<Row> testData = trainingAndTestData[1]; 
+		
+		LinearRegressionModel model = new LinearRegression().fit(trainingData);
+		
+		System.out.println("Training data r2 value is " + model.summary().r2() + " and the RMSE is " + model.summary().rootMeanSquaredError()); 
+		
+		model.transform(testData).show(); 
+		
+		System.out.println("Testing data r2 value is " + model.evaluate(testData).r2() + " and the RMSE is " + model.evaluate(testData).rootMeanSquaredError()); 
+			
+/* Training data r2 value is 0.50146 and the RMSE is 256742.03880
+ * Testing data r2 value is 0.52539 and the RMSE is 262194.4387
+ */
+		VectorAssembler vectorAssemblerExample = new VectorAssembler()
+				.setInputCols(new String[] {"bedrooms", "bathrooms", "sqft_living", "sqft_lot", "floors", "grade"} )
+				.setOutputCol("features");
+	}
+}

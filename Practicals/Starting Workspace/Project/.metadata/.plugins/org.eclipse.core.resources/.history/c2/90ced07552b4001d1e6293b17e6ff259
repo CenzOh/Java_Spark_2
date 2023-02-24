@@ -1,0 +1,11 @@
+package com.virtualpairprogrammers;
+
+public class Lesson100 {
+
+/* Lesson 100 Training Testing and Holdout data
+ * 
+ * Recall when we will split our data, 80% will be training and 20% will be for testing / evaluating. Now we will ask Spark to run the model building process tons of times to see which is
+ * the best set of parameters. So we will split our data into three sections. Largest part to build the model, Spark uses next part to evaluate which is the best one, finally we will
+ * use the third set of data to do our own evaluation to see if Spark produced a good model or not.
+ */
+}

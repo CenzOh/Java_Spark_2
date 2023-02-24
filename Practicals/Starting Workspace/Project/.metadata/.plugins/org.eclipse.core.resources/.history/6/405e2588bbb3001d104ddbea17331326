@@ -1,0 +1,11 @@
+package com.virtualpairprogrammers;
+
+public class Lesson99 {
+
+/* Lesson 99 setting linear regression parameters
+ * 
+ * We will be talking about model fitting parameters. In last few chapters we saw the following warning:
+ * 
+ * WARN WeightedLeastSquares: regParam is zero, which might cause numerical instability and overfitting.
+ */
+}

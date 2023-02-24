@@ -1,0 +1,65 @@
+package com.virtualpairprogrammers;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
+
+public class Lesson103 {
+	
+/* Lesson 103 Identifying and Eliminating Duplicated Features
+ * 
+ * The next issue we have to address is duplication within variables. Ex - is sqft_living and sqft_living15 the same thing? Instrucotr thinks living is the size of property and living
+ * 15 is the size of property in 2015 but its not clear in the description. Maybe owners added extension and increased space so there would be a slightly different size.
+ * Again not clear if thats the case. Lets just check if these two fields are related to each other since their correlation is strong and in the right direction. We want to pick
+ * one of these fields but not both. Which field do we pick? THe one with the higher correlation figure. So lets pick sqft_living and DROP sqft_living15.
+ * 
+ * Now to our feature selection list we need to ask if there are any duplicate variables that contain the same data as each other or very strongly correlated data with each other.
+ * General rule is to AVOID having this in our model as it will lead to issues later on if we have variables that are strongly related to each other.
+ * The way we can find this out is by doing a double loop. Consider the correlation of each variable with each other variable.
+ */
+
+	public static void main(String[] args) {
+		
+		System.setProperty("hadoop.home.dir", "c:/hadooop"); 
+		Logger.getLogger("org.apache").setLevel(Level.WARN);
+		
+		SparkSession spark = SparkSession.builder()
+				.appName("Gym Competitors")
+				.config("spark.sql.warehouse.dir", "file:///c:/tmp/")
+				.master("local[*]")
+				.getOrCreate();
+		
+		Dataset<Row> csvData = spark.read()
+				.option("header",  true)
+				.option("inferSchema", true)
+				.csv("src/main/resources/kc_house_data.csv"); 
+
+//		csvData.describe().show();
+		
+		csvData = csvData.drop("id", "date", "waterfront", "view", "condition", "grade", "yr_renovated", "zipcode", "lat", "long"); 
+		
+		for (String col : csvData.columns()) { 
+			System.out.println("Correlation between price and " + col + " is " + csvData.stat().corr("price", col) );
+		}
+		
+		csvData = csvData.drop("sqft_lot", "sqft_lot15", "yr_built", "sqft_living15"); //removing cols that have small correlation 
+		
+/* price 1.0
+ * bedrooms 0.308
+ * bathrooms 0.525
+ * sqft_living 0.702
+ * sqft_lot 0.089
+ * floors 0.256
+ * sqft_above 0.6055
+ * sqft_basement 0.3238
+ * yr_built 0.0540
+ * sqft_living15 0.5853
+ * sqft_lot15 0.0824
+ */
+		
+		
+		
+	}
+}

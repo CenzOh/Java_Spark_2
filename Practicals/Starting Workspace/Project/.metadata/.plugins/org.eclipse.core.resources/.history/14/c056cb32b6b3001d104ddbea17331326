@@ -1,0 +1,15 @@
+package com.virtualpairprogrammers;
+
+public class Lesson95 {
+
+/* Lesson 95 working with data from kaggle.
+ * 
+ * We must be careful when working with different data sets on kaggle because we may have to do some manipulation to be able to use them. Maybe theres missing values, forced data in outliers,
+ * etc. We have to do some analysis to clean up the data. We wont do that in this module since we covered it earlier. THis data chosen doesnt really need much cleanup.
+ * Our data file is called kc_house_data.csv. New class to use this called HousePriceAnalysis.java. We can use some of the starter code from the earlier classs
+ */
+	
+	
+	
+	
+}

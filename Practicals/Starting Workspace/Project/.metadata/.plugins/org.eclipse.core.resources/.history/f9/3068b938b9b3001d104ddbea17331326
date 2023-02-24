@@ -1,0 +1,14 @@
+package com.virtualpairprogrammers;
+
+public class Lesson98 {
+
+/* Lesson 98 Assessing Model Accuracy with R2 and RMSE
+ * 
+ * There are ways to assess whether a model is good or not other than looking at the predictions and comparing to labels. Actual statistical measures. Which statistical measures
+ * that are available depends on the model. FOr linear regression, we have two: root mean squared error RMSE and the r squared value. We wont go into detail about what they are. 
+ * Not difficult to calculate tho. One thing to know, for RMSE know that the smaller the number the better. FOr R2 its a measure between 0 and 1, so closer to 1 is better.
+ * 
+ * If we had two models and one model had a LOWER RMSE and a HIGHER R squared. That model would be BETTER than the first model. If RMSE is very small and R squared is close to 1, generally
+ * will be a good model. Thats what we want. Spark will calculate these values for us in training AND testing data.
+ */
+}

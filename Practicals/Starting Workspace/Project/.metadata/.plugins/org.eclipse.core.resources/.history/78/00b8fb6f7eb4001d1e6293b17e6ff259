@@ -1,0 +1,28 @@
+package com.virtualpairprogrammers;
+
+public class Lesson105 {
+
+/* Lesson 105 Usiong OneHotEncoding
+ * 
+ * Up to this point we have been working with numeric data because the mathematical algorithms ML uses requires our features to be features.
+ * Lets try to use non numeric. First lets go back to the simple data set of gym members and how many reps they can perform
+ * 
+ * CompetitorID | Gender | Age | Height | Weight | NoOfReps
+ * 1			| M	  	 | 23  | 180    | 88	 | 55
+ * 
+ * Recall that we excluded the gender field. Now, lets include gender in our model build. Spark gives us a way to automate to make it work. Lets look at theory first:
+ * We need to give our gender field a value. Not as simple as M = 1, F = 2, unknown = 3. This d/n work because having values like this may show higher order or rank.
+ * This is not true. The algorithm will think Females do better than males and unknowns do better than females. Makes no sense. Spark will look for correlation between NoOfReps and gender.
+ * 
+ * So we want to convert gender to a num and avoid an implied rank. DO this by converting to three separate fields. So do it like this:
+ * CompetitorID | Male | Female | Unknown | Age | Height | Weight | NoOfReps
+ * 1			| 1    | 0      | 0       | 23  | 180    | 88	 | 55
+ * 
+ * Now we can see if competitor is a male, 1 in male and 0 in rest. This split removes bias and ranking. Model building process will show that the data point has that particular feature
+ * or not. Now we will get meaningful outcome. We made these fields into a boolean value. 
+ * 
+ * SO in spark we dont have to go to this level of separate fields. We can combine these values into a single field by making it a vector:
+ * CompetitorID | Gender | Age | Height | Weight | NoOfReps
+ * 1			| [1,0,0]  	 | 23  | 180    | 88	 | 55
+ */
+}

@@ -1,0 +1,35 @@
+package com.virtualpairprogrammers;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
+
+public class Lesson96 {
+	
+/* Lesson 96 Practical Walkthrough
+ * Lets do it together. First create a set of features which need to be a vector.
+ */
+	
+	public static void main(String[] args) {
+		
+		System.setProperty("hadoop.home.dir", "c:/hadooop"); 
+		Logger.getLogger("org.apache").setLevel(Level.WARN);
+		
+		SparkSession spark = SparkSession.builder()
+				.appName("Gym Competitors")
+				.config("spark.sql.warehouse.dir", "file:///c:/tmp/")
+				.master("local[*]")
+				.getOrCreate();
+		
+		Dataset<Row> csvData = spark.read()
+				.option("header",  true)
+				.option("inferSchema", true)
+				.csv("src/main/resources/kc_house_data.csv"); //changed
+		
+		csvData.printSchema();
+		
+		csvData.show();
+
+}

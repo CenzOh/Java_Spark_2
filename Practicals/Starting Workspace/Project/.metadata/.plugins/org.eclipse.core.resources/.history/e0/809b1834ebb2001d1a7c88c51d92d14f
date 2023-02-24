@@ -1,0 +1,16 @@
+package com.virtualpairprogrammers;
+
+public class Lesson89 {
+	
+/* Lesson 89 The Model Building Process
+ * 
+ * We will look at an overview of a model building process. There are several steps we must follow. 
+ * First thing to do, choose the right model for the issue we are solving. Do we want linear regression, k means clustering, etc. The model chosen is based on what we are trying to determine
+ * and shape our data.
+ * Second, decide what data should go in the model. We may have tons of data, not all of it is relevant. Selecting correct data can be time consuming task. Even with spark its
+ * a bit of a manual task to get optimal selection of input parameters.
+ */
+	
+	
+	
+}

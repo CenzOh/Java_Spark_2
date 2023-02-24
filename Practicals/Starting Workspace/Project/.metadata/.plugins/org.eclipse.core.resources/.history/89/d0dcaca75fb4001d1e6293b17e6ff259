@@ -1,0 +1,95 @@
+package com.virtualpairprogrammers;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.spark.ml.evaluation.RegressionEvaluator;
+import org.apache.spark.ml.feature.VectorAssembler;
+import org.apache.spark.ml.param.ParamMap;
+import org.apache.spark.ml.regression.LinearRegression;
+import org.apache.spark.ml.regression.LinearRegressionModel;
+import org.apache.spark.ml.tuning.ParamGridBuilder;
+import org.apache.spark.ml.tuning.TrainValidationSplit;
+import org.apache.spark.ml.tuning.TrainValidationSplitModel;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
+
+public class Lesson101 {
+
+/* Lesson 101 Describing the Features
+ * 
+ * We will talk about how we select the parameters to build our model. Our current dataset has a ton of fields. We dont know which fields are good predictors of our outcomes.
+ * The process to select suitable vairables for input into the model is a separate science so we will simply go over a high level overview of basic principles.
+ * 
+ * First issue, eliminate dependent variables. We dont want variables that DEPEND on the variable we are trying to predict (price). This should not be the case in our data set.
+ * Imagine though that there was a field called sales tax. It contains amount of tax we would have to pay to buy the property. Sales tax is a percentage of that property.
+ * This is a dependent variable. If we get a sales tax figure would we be able to accurately predict the property? No because if we dont know the price, we wont know the sales tax.
+ * So the sales tax figure would be made up.
+ * 
+ * Second issue, understand a bit more about our data. DOes each variable have a sufficiently wide range of values? Helpful to know the minimum, maximum, and avg value of our labels and for
+ * each features. We can find variation in the range too. If house range is between 100k - 1M but in our data most houses were around 700k then we know there isnt much variation.
+ * Spark can give us this information with the .describe() method on a dataaset. 
+ */
+	
+	public static void main(String[] args) {
+		
+		System.setProperty("hadoop.home.dir", "c:/hadooop"); 
+		Logger.getLogger("org.apache").setLevel(Level.WARN);
+		
+		SparkSession spark = SparkSession.builder()
+				.appName("Gym Competitors")
+				.config("spark.sql.warehouse.dir", "file:///c:/tmp/")
+				.master("local[*]")
+				.getOrCreate();
+		
+		Dataset<Row> csvData = spark.read()
+				.option("header",  true)
+				.option("inferSchema", true)
+				.csv("src/main/resources/kc_house_data.csv"); 
+
+		VectorAssembler vectorAssembler = new VectorAssembler()
+				.setInputCols(new String[] {"bedrooms", "bathrooms", "sqft_living", "sqft_lot", "floors", "grade"} )
+				.setOutputCol("features");
+		
+		Dataset<Row> modelInputData = vectorAssembler.transform(csvData)
+				.select("price", "features")
+				.withColumnRenamed("price",  "label");
+		
+//		modelInputData.show();
+		
+		Dataset<Row>[] dataSplits = modelInputData.randomSplit(new double[] {0.8, 0.2}); //renamed from trainingAndTestData to dataSplits
+		Dataset<Row> trainingAndTestData = dataSplits[0]; //renamed from traingData to trainingAndTestData
+		Dataset<Row> holdOutData = dataSplits[1];  //renamed from testData to holdOutData
+		
+		
+		LinearRegression linearRegression = new LinearRegression();
+		
+		ParamGridBuilder paramGridBuilder = new ParamGridBuilder();
+
+		ParamMap[] paramMap = paramGridBuilder.addGrid(linearRegression.regParam(), new double[] {0.01, 0.1, 0.5})
+				.addGrid(linearRegression.elasticNetParam(), new double[] {0, 0.5, 1})
+				.build();
+		
+		TrainValidationSplit trainValidationSplit = new TrainValidationSplit() //import trainValidationSplit and RegressionEvaluator()
+				.setEstimator(linearRegression) //set the model we want to use, which in our case is linear regression
+				.setEvaluator(new RegressionEvaluator().setMetricName("r2")) //"rmse" for root mean squared in .setMetricName(), takes in string argument
+				.setEstimatorParamMaps(paramMap) //set paramMap object which we created
+				.setTrainRatio(0.8); //training is 80% rest is used for testing
+
+/* The trainValidationSplit object will produce the model for us. It can take any type of model builder, it is currently wrapping the linear regression.
+ * When we run the fit method, the method to build our model, we will not get a linear regression model out of it. We'll get a trainValidationSplit model and we need to extract the linear reg model
+ */
+		TrainValidationSplitModel model = trainValidationSplit.fit(trainingAndTestData); //import TrainValidationSplitModel. Extract with .bestModel() method
+		LinearRegressionModel lrModel = (LinearRegressionModel) model.bestModel(); 		
+		
+		
+		System.out.println("Training data r2 value is " + lrModel.summary().r2() + " and the RMSE is " + lrModel.summary().rootMeanSquaredError()); //call lrModel instead of model now 
+		
+//		model.transform(testData).show(); 
+		
+		System.out.println("Testing data r2 value is " + lrModel.evaluate(holdOutData).r2() + " and the RMSE is " + lrModel.evaluate(holdOutData).rootMeanSquaredError()); 
+		
+		System.out.println("coefficients " + lrModel.coefficients() + " intercept: " + lrModel.intercept());
+		System.out.println("reg param: " + lrModel.getRegParam() + " elastic net param: " + lrModel.getElasticNetParam());
+	}
+}

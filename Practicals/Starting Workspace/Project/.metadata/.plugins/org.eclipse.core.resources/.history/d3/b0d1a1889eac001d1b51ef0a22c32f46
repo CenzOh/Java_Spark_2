@@ -1,8 +1,0 @@
-package com.virtualpairprogrammers;
-
-import java.io.Serializable;
-import java.util.Comparator;
-
-public interface SerializeableCOmparator<T> extends Comparator<T>, Serializable {
-
-}

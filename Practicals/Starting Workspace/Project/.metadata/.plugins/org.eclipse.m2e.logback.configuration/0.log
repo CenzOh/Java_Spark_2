@@ -108,3 +108,36 @@ Caused by: java.lang.Exception: A resource exists with a different case: '/Proje
 2023-02-10 12:03:05,331 [Worker-45: Updating Maven Project] INFO  o.e.m.c.i.p.ProjectConfigurationManager - Update completed: 0 sec
 2023-02-13 09:13:10,634 [Worker-2: Loading available Gradle versions] INFO  o.e.b.c.i.u.g.PublishedGradleVersions - Gradle version information cache is out-of-date. Trying to update.
 2023-02-14 13:41:08,207 [Worker-5: Loading available Gradle versions] INFO  o.e.b.c.i.u.g.PublishedGradleVersions - Gradle version information cache is out-of-date. Trying to update.
+2023-02-22 13:09:21,905 [Worker-0: Loading available Gradle versions] INFO  o.e.b.c.i.u.g.PublishedGradleVersions - Gradle version information cache is out-of-date. Trying to update.
+2023-02-23 13:12:02,869 [Worker-5: Loading available Gradle versions] INFO  o.e.b.c.i.u.g.PublishedGradleVersions - Gradle version information cache is out-of-date. Trying to update.
+2023-02-23 13:13:33,403 [Worker-21: reload maven project] WARN  o.e.m.c.i.embedder.EclipseLogger - The POM for commons-codec:commons-codec:jar:1.15-SNAPSHOT is missing, no dependency information available
+2023-02-23 13:13:35,280 [Worker-21: reload maven project] WARN  o.e.m.c.i.embedder.EclipseLogger - The POM for commons-codec:commons-codec:jar:1.15-SNAPSHOT is missing, no dependency information available
+2023-02-23 13:13:45,225 [Worker-16: reload maven project] WARN  o.e.m.c.i.embedder.EclipseLogger - The POM for commons-codec:commons-codec:jar:1.15-SNAPSHOT is missing, no dependency information available
+2023-02-23 13:13:45,709 [Worker-16: reload maven project] WARN  o.e.m.c.i.embedder.EclipseLogger - The POM for commons-codec:commons-codec:jar:1.15-SNAPSHOT is missing, no dependency information available
+2023-02-23 13:14:34,403 [Worker-3: reload maven project] WARN  o.e.m.c.i.embedder.EclipseLogger - The POM for commons-codec:commons-codec:jar:1.15-SNAPSHOT is missing, no dependency information available
+2023-02-23 13:14:35,105 [Worker-3: reload maven project] WARN  o.e.m.c.i.embedder.EclipseLogger - The POM for commons-codec:commons-codec:jar:1.15-SNAPSHOT is missing, no dependency information available
+2023-02-23 13:14:37,055 [main] INFO  o.e.m2e.actions.ExecutePomAction - Using existing launch configuration
+2023-02-23 13:14:37,178 [Worker-29: Launching Project] INFO  o.e.m.i.launch.MavenLaunchDelegate - C:\Users\Cenzo Oh\JavaSparkCourse\Practicals\Starting Workspace\Project\Project
+2023-02-23 13:14:37,178 [Worker-29: Launching Project] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -B eclipse:eclipse
+2023-02-23 13:27:07,894 [Worker-30: Launching Project] INFO  o.e.m.i.launch.MavenLaunchDelegate - C:\Users\Cenzo Oh\JavaSparkCourse\Practicals\Starting Workspace\Project\Project
+2023-02-23 13:27:07,895 [Worker-30: Launching Project] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -B eclipse:eclipse
+2023-02-23 13:28:51,072 [Worker-1: Loading available Gradle versions] INFO  o.e.b.c.i.u.g.PublishedGradleVersions - Gradle version information cache is up-to-date. Trying to read.
+2023-02-23 13:29:39,687 [Worker-15: reload maven project] WARN  o.e.m.c.i.embedder.EclipseLogger - The POM for commons-codec:commons-codec:jar:1.15-SNAPSHOT is missing, no dependency information available
+2023-02-23 13:29:40,607 [Worker-15: reload maven project] WARN  o.e.m.c.i.embedder.EclipseLogger - The POM for commons-codec:commons-codec:jar:1.15-SNAPSHOT is missing, no dependency information available
+2023-02-23 13:30:17,762 [Worker-10: Launching Executing clean in C__Users_Cenzo Oh_JavaSparkCourse_Practicals_Starting Workspace_Project_Project] INFO  o.e.m.i.launch.MavenLaunchDelegate - C:\Users\Cenzo Oh\JavaSparkCourse\Practicals\Starting Workspace\Project\Project
+2023-02-23 13:30:17,762 [Worker-10: Launching Executing clean in C__Users_Cenzo Oh_JavaSparkCourse_Practicals_Starting Workspace_Project_Project] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -B clean
+2023-02-23 13:30:36,739 [Worker-29: Launching Project] INFO  o.e.m.i.launch.MavenLaunchDelegate - C:\Users\Cenzo Oh\JavaSparkCourse\Practicals\Starting Workspace\Project\Project
+2023-02-23 13:30:36,739 [Worker-29: Launching Project] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -B eclipse:eclipse
+2023-02-23 13:37:42,088 [main] INFO  o.e.m2e.actions.ExecutePomAction - Using existing launch configuration
+2023-02-23 13:37:42,181 [Worker-18: Launching Project] INFO  o.e.m.i.launch.MavenLaunchDelegate - C:\Users\Cenzo Oh\JavaSparkCourse\Practicals\Starting Workspace\Project\Project
+2023-02-23 13:37:42,181 [Worker-18: Launching Project] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -B eclipse:eclipse
+2023-02-23 13:40:39,652 [Worker-1: Updating Maven Project] INFO  o.e.m.c.i.p.ProjectConfigurationManager - Update started
+2023-02-23 13:40:39,685 [Worker-1: Updating Maven Project] INFO  o.e.m.c.i.p.ProjectConfigurationManager - Update completed: 0 sec
+2023-02-23 13:41:02,289 [Worker-37: Launching Executing clean in C__Users_Cenzo Oh_JavaSparkCourse_Practicals_Starting Workspace_Project_Project] INFO  o.e.m.i.launch.MavenLaunchDelegate - C:\Users\Cenzo Oh\JavaSparkCourse\Practicals\Starting Workspace\Project\Project
+2023-02-23 13:41:02,290 [Worker-37: Launching Executing clean in C__Users_Cenzo Oh_JavaSparkCourse_Practicals_Starting Workspace_Project_Project] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -B clean
+2023-02-23 13:41:06,946 [main] INFO  o.e.m2e.actions.ExecutePomAction - Using existing launch configuration
+2023-02-23 13:41:07,038 [Worker-1: Launching Project] INFO  o.e.m.i.launch.MavenLaunchDelegate - C:\Users\Cenzo Oh\JavaSparkCourse\Practicals\Starting Workspace\Project\Project
+2023-02-23 13:41:07,038 [Worker-1: Launching Project] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -B eclipse:eclipse
+2023-02-23 13:41:13,366 [Worker-8: Launching Executing clean in C__Users_Cenzo Oh_JavaSparkCourse_Practicals_Starting Workspace_Project_Project] INFO  o.e.m.i.launch.MavenLaunchDelegate - C:\Users\Cenzo Oh\JavaSparkCourse\Practicals\Starting Workspace\Project\Project
+2023-02-23 13:41:13,366 [Worker-8: Launching Executing clean in C__Users_Cenzo Oh_JavaSparkCourse_Practicals_Starting Workspace_Project_Project] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -B clean
+2023-02-24 09:06:05,967 [Worker-4: Loading available Gradle versions] INFO  o.e.b.c.i.u.g.PublishedGradleVersions - Gradle version information cache is up-to-date. Trying to read.

@@ -1,0 +1,32 @@
+package com.virtualpairprogrammers;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
+
+public class Lesson92 {
+
+/* Lesson 92 Assembling a Vector of Features
+ * 
+ * 
+ */
+	
+	public static void main(String[] args) {
+		
+		System.setProperty("hadoop.home.dir", "c:/hadooop"); 
+		Logger.getLogger("org.apache").setLevel(Level.WARN); //disable logging we dont want to see, set the level to WARN
+		
+		SparkSession spark = SparkSession.builder() //create spark session, pretty much boilerplate
+				.appName("Gym Competitors") //name our application
+				.config("spark.sql.warehouse.dir", "file:///c:/tmp/") //config for windows
+				.master("local[*]") //set master to use all local cores
+				.getOrCreate();
+		
+		Dataset<Row> csvData = spark.read().option("header",  true).csv("src/main/resources/GymCompetition.csv");
+//dataset of rows is a DF recall. Put in option that there are headers to read. Then .csv() to read in the csv file with the path.
+		
+		csvData.show(); //checking if worked okay.
+	}
+}
