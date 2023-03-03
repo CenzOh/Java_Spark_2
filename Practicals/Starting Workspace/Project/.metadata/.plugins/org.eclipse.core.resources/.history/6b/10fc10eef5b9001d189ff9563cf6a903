@@ -1,0 +1,36 @@
+package com.virtualpairprogrammers;
+
+public class Lesson129 {
+
+/* Lesson 129 Overview of Kafka
+ * 
+ * Other tahn set up streaming and start process, analysis, filters, maps, reduce by key same thing we would do in spark. Great but our demo was using a brittle socket connection.
+ * Wouldnt be doing that in real life. Lets switch to common component in streaming architecture, apache kafka. Kafka is used in combo with spark when it comes to streaming,
+ * we will have a basic overview of it. Not deep detail. High level. 
+ * 
+ * What is kafka and what can it do? Can view the home page on https://kafka.apache.org Doesnt give too much to explain it. Instructor explains that kafka is difficult to explain
+ * since it has a ton of aspects to it. THey can be exploited in differnt ways. Kafka iss a very general purpose tool and can be used in different scenarios in an architecture.
+ * At first you may think kafka is a message broker. THink apache active MQ or Rabbit MQ. THis is where we have a message broker, central component (kafka) and clients send messages
+ * to the broker. Can be long series of messages. Later time, different clients of broker read the messages from the broker. So this makes kafka a queue. 
+ * You dont want to couple them together but exchange info between each other. You can def use kafka as a message broker. 
+ * 
+ * On the webstie, under use cases you can see it is recommended that messaging can be used for kafka. But kafka can do more than just a message broker. Web page says something
+ * about kafka being a publish subscribe system. THis is different to queuing, a client publish subscribe system would be like this: the system sends message to broker,
+ * subscribers can be any code we write such as different subsystems in our architecture. We may want the different subsystems to respond to the message  and it can
+ * trigger to do something like send email, store message, etc. Published subscribe System (PSS) is a many to many system. Kafka is def a PSS. But what is really kafka good for? Since the
+ * other broker systems like the MQ can do the PSS as well
+ * 
+ * How kafka differs: Kafka can keep a log of historic messages. In traditional PSS, once message has been broadcasted, it is deleted from broker. IF subscriber connects at later time
+ * after message broadcasts, then it wont receive that message. So no history with the broker. In traditional queue, once message is consumed, it is deleted.
+ * Kafka keeps a historic log of messages. Powerful concept. Kafka can be used as an event log. Think of kafka as an event log sometimes called an event ledger.
+ * Lets change the name of the message to event. Once we have a log, we can think of them like an event rather than a message. Perfectly suited to record events that happened in a system.
+ * We can have a client which can be code in a system, broadcast event to subscribers, and is still recorded on Kafka. So we can perform analysis of historic events.
+ * 
+ * Kakfa is super general purpose but in one sentence we can say Kafka is a DISTRIBUTED event ledger / log. In terms of distributed, Kafka can be stored in lots of event data. Kafka 
+ * by design it can be relatively easily distributed in a cluster. Can be exploited for many purposes, but being able to gather tons of event data make it perfect for
+ * streaming applications. 
+ * 
+ * Typical architecture, typical stream of events. Can be from anywhere like clicks on websites. We can catch these in kafka, it can keep a historic record of these events. And it connects
+ * consumers to kafka. Consumer is spark streaming that recieves event batches to perform analysis. We can connect other consumers to the broker like a micro service.
+ */
+}

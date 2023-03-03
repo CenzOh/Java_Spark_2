@@ -1,0 +1,131 @@
+package com.virtualpairprogrammers;
+
+//for the col() function
+import static org.apache.spark.sql.functions.col;
+
+import java.util.List;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.spark.ml.recommendation.ALS;
+import org.apache.spark.ml.recommendation.ALSModel;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
+
+public class Lesson120 {
+
+/* Lesson 120 Building the Matrix Factorization Model
+ * 
+ * We will use the dataset called VPPcourseViews.csv again data is pretty clean, has good proxy / good proportion on each course. We also have a col that shows how much percentage
+ * of course watched. We can calculate it such as 100% watched = 5 star rating, 2 or 3% = 1 star. Dont even need to convert the numbers, we can use the percentages as ratings. 
+ * Simply substitute proportion watched for rating. Our data includes 600 customers and 20 courses. Create new class VPPCourseRecommendations.java
+ * We can borrow some of the code from our previous versions like from VPPFreeTrial.java but remove the UDF we dont need that. Copy our CSV into the resources folder too
+ */
+	
+	public static void main(String[] args) {
+		
+		System.setProperty("hadoop.home.dir", "c:/hadooop"); 
+		Logger.getLogger("org.apache").setLevel(Level.WARN);
+		
+		SparkSession spark = SparkSession.builder()
+				.appName("VPP Chapter Views")
+				.config("spark.sql.warehouse.dir", "file:///c:/tmp/")
+				.master("local[*]")
+				.getOrCreate();
+		
+		
+		Dataset<Row> csvData = spark.read()
+				.option("header",  true)
+				.option("inferSchema", true)
+				.csv("src/main/resources/vppCourseViews.csv");
+		
+		csvData.show();
+/* userID | courseID | proportionWatched
+ * 1	  | 1		 | 0.15
+ * 
+ * Simple dataset. Proportion is a decimal so 1 is 100%, 0.15 is 15%. Lets try to multiply these proporitons watched by 100 to make it easier to read and make it a whole number.
+ */
+		
+		csvData = csvData.withColumn("proportionWatched", col("proportionWatched").multiply(100)); //taking proportion watched col, and multiplying it by 100.
+		csvData.show();
+
+		
+/* Lets view the data as a table kind of lik ethe matrix we want to visualize. So we would want to do a groupBy(userID) since this is the row. Then we .pivot() on the course ID so they
+ * become the columns.
+ */
+		csvData.groupBy("userId").pivot("courseId").sum("proportionWatched").show();
+		
+/* userID | 1      | 2       | ...
+ * 496	  | NULL   | 62.0    | 
+ * 471	  | 28.0004| 74.0    |
+ * 
+ * Lets look at how to read the table. User 471 rated course 1 with a rating of 28, course 2 with 74, etc. THis means they WATCHED 74% of the course but we named it so that would be the rating.
+ * Also we have a lot of NULLs in our table. What would the user hypothetically give as a rating to the course where it says NULL? If its a high number we would want to recommend that course
+ * to the user such as for user 496 who doenst have a rating for course 1.
+ * 
+ * In order for the model to be built, we had to do work to get a vector / features. Recall, this is unsupervised so no label. We actually dont need to build the vector / column of features
+ * for this ALS model. We need to provide the model with a 3 col dataset. One col user, another for product (course), and another for the rating (proportion watched). Our dataset is in right format.
+ * One thing is, our user and course field MUST be integers. Rating can be a numeric value. All data must be numbers pretty much.
+ * 
+ * We will split our data into two sets so we can do some predictions on the second data set. We can do a 90-10 split. 
+ */
+		Dataset<Row>[] trainingAndHoldoutData = csvData.randomSplit(new double[] {0.9, 0.1});
+		Dataset<Row> trainingData = trainingAndHoldoutData[0];
+		Dataset<Row> holdoutData = trainingAndHoldoutData[1];
+		
+		ALS als = new ALS() //import ALS form ml 
+				.setMaxIter(10) //max iterations
+				.setRegParam(0.1) //reg param like earlier
+				.setUserCol("userId")
+				.setItemCol("courseId")
+				.setRatingCol("proportionWatched");
+		
+		ALSModel model = als.fit(trainingData); //import ALSModel
+		
+		Dataset<Row> predictions = model.transform(holdoutData); //transform the holdout data this time
+		predictions.show();
+		
+/* userId | courseId | proportionWatched | prediction
+ * 53	  | 12		 | 12.0 			 | 107.843
+ * 155	  | 12		 | 100.0			 | 91.8167
+ * 76	  | 12 	 	 | 100.0			 | 71.8678
+ * 
+ * Even tho this is unsupervised learning, we just so happen to have a known answer of the proportion watched. Our prediction as well. Looks reasonably good. 
+ * There was one that said 53 proportion and predicted 48. A lot of the 100s were high number. We did this to show we can do this sort of analysis even though it is unsupervised.
+ * 
+ * Although doesnt make much since because we want to find the answers to the GAPS. What we have here is a set of answers where we KNOW the answer. Lets say if user 53 didnt take course
+ * 11, we want to predict what their rating for that course will be. Course 11 wont be in the underlying dataset so running this wont give us that answer. 
+ * We need to do something different to get that answer. So isntead of splitting the data, lets run the model on the entire dataset!! And not do the transformations to get the predictions.
+ * THis model object has a number of methods we can use. There are methods called recommendedForAll items, users, ForUsers, subset. recommended for all users will tell us
+ * what are recommended for all items for each product which users should we recommend that product to? 
+ */
+		ALSModel model1 = als.fit(csvData);
+		
+		Dataset<Row> userRecs = model1.recommendForAllUsers(5); //lets for now set max recommendations of 5 at a time. 20 courses in total
+		userRecs.show();
+/* userId | recommendations
+ * 471	  | [[16, 94.4563], ...
+ * 
+ * We have a dataset containing a set of users in first col. Second col is course number followed by prediction of what rating they will give it. Some are over 100 which is fine.
+ * Lets take a few of these and dig in further to understand results
+ */
+		
+		List<Row> userRecsList = userRecs.takeAsList(5); //returns java object of list, we will grab 5 recommendations as a list. Loop through each item in the list and print things about them.
+		
+		for (Row r : userRecsList) {
+			int userId = r.getAs(0);
+			String recs = r.getAs(1).toString(); //getAs is a spark internal wrapper type object
+			System.out.println("User " + userId + " we may want to recommend " + recs);
+			System.out.println("This user has already watched: " );
+			csvData.filter("userId = " + userId); //gives us just the records for that user id
+/* User 471 we might want to recommend WrappedArray([16,94.4563], ...
+ * This user has already watched:
+ * userId | courseId | proportionWatched
+ * 471    | 1        | 28.000004
+ * 
+ * Looks like recommendation is an array that contains course 16 and predicts 94% the user will rate it / proportion watched. The list goes in order of highest pr
+ */
+		}
+	}
+}

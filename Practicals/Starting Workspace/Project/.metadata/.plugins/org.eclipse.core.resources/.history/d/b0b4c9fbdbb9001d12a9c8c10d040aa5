@@ -1,0 +1,32 @@
+//used in spark streaming to do something similar to netcat to receive input data. lesson 123
+package com.virtualpairprogrammers;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+public class LoggingServer {
+
+	public static void main(String[] args) throws IOException, InterruptedException{
+		
+		ServerSocket echoSocket = new ServerSocket(8989); //8989 for port
+		Socket socket = echoSocket.accept();
+		
+		while (true) {
+			
+			PrintWriter out =
+					new PrintWriter(socket.getOutputStream(), true); //true for autoFLush
+			double sample = Math.random();
+			String level = "DEBUG";
+			if (sample < 0.0001) {
+				
+				level = "FATAL";
+			}
+			else if (sample < 0.01) {
+				
+				level = "ERROR";
+			}
+		}
+	}
+}

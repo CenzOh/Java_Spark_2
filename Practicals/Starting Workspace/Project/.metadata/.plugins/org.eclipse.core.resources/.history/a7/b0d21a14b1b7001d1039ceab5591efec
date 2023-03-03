@@ -1,0 +1,15 @@
+package com.virtualpairprogrammers;
+
+public class Lesson114 {
+
+/* Lesson 114 Overview of Decision Trees
+ * 
+ * Next model is decision trees. There are two types in spark we will cover both. Decision trees are cool! Outcome is easy to understand and easy to translate to english. 
+ * Ex - is it an existing customer? - yes -> low risk
+ * 									| - no - is customer in high risk country? - yes -> high risk ....
+ * 
+ * Goal of building a DT with ML is to end up with a human readable flowchart which we can use as a decision making tool. The above example is a great example. Looking to find if
+ * the transaction will be fraudulent or genuine. Idea is ML process comes up with a process which is a set of rules. If you ask right questions, you can categorize each transaction
+ * with an outcome based on these features within the questions. THis example is a boolean example but DTs can have multiple categories. 
+ */
+}

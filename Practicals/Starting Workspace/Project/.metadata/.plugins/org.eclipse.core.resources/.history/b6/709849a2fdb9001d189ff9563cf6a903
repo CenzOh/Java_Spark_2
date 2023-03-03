@@ -1,0 +1,22 @@
+package com.virtualpairprogrammers;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.spark.SparkConf;
+
+public class Lesson133 {
+
+/* Lesson 133 Using Kafkas Utils to access DStream
+ * 
+ * We have a class called Kafka.utils
+ */
+	
+	@SuppressWarnings("resource") 
+	public static void main(String[] args) throws InterruptedException {
+		System.setProperty("hadoop.home.dir", "c:/hadoop"); 
+		Logger.getLogger("org.apache").setLevel(Level.WARN); 
+		Logger.getLogger("org.apache.spark.storage").setLevel(Level.ERROR); 
+	
+		SparkConf conf = new SparkConf().setMaster("local[*]").setAppName("startingSpark");
+	}
+}

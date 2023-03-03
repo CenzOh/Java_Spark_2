@@ -1,0 +1,55 @@
+package com.virtualpairprogrammers;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.streaming.OutputMode;
+import org.apache.spark.sql.streaming.StreamingQuery;
+import org.apache.spark.sql.streaming.StreamingQueryException;
+
+public class Lesson138 {
+
+/* Lesson 138 Data Sink
+ * 
+ * We have more formal api in spark structured streaming to write results. In DStreams we had to do this annoying print. We could have in place written to a file. 
+ * Not obv how often it will be printed structured streaming instead has a formal cocnept called data sink. Read from the source, process it, output to a data sink
+ * 
+ * We can specify using format method for differnet destinations to the output. Output to a file. DIffernt formats like JSON, CSV, apache parquet column format used in hadoop.
+ * Or we can write to kafka topic. Lets keep it simple first like a console sink similar to before. Another is memory sink for debugging, this outputs to inmemory table. 
+ */
+	@SuppressWarnings("resource") 
+	public static void main(String[] args) throws StreamingQueryException {
+		System.setProperty("hadoop.home.dir", "c:/hadoop"); 
+		Logger.getLogger("org.apache").setLevel(Level.WARN); 
+		Logger.getLogger("org.apache.spark.storage").setLevel(Level.ERROR); 
+		
+//boilerplate ^^^^^^
+		SparkSession session = SparkSession.builder()
+				.master("local[*]")
+				.appName("structuredViewingReport")
+				.getOrCreate();
+		
+		Dataset<Row> df = session.readStream() 
+				.format("kafka")
+				.option("kafka.bootstrap.servers", "localhost:9092")
+				.option("subscribe",  "viewrecords")
+				.option("kafka.value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer")
+				.load(); 
+		
+//start dataframe ops
+		df.createOrReplaceTempView("viewing_figures");
+		
+//key, value, timestamp
+		Dataset<Row> results = session.sql("select cast (value as string) as course_name from viewing_figures"); //include cast in the sql
+		
+		StreamingQuery query = results //returns obj of streaming query
+			.writeStream()
+			.format("console")
+			.outputMode(OutputMode.Append())
+			.start(); //similar to the start method on the spark context, now we can call it on the dataset
+		
+		query.awaitTermination(); //inf loop to allow the console to hold so we can view spark ui.
+	}
+}

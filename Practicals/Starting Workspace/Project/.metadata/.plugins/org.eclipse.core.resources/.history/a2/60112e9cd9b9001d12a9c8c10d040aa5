@@ -1,0 +1,13 @@
+package com.virtualpairprogrammers;
+
+public class Lesson123 {
+
+/* Lesson 123 DStreams
+ * 
+ * DStreams simple model. View the model of how it works at https://spark.apache.org/docs/latest/streaming-programming-guide.html
+ * 
+ * Input data stream -> spark streaming -> batches of input data -> spark engine -> batches of processed data -> 
+ * 
+ * This picture says it all. WE have some input data that continuously streams. Events constantly coming in at random intervals. Like price update, log message, user transactions, etc.
+ */
+}

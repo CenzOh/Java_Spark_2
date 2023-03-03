@@ -1,0 +1,9 @@
+package com.virtualpairprogrammers;
+
+public class Lesson128 {
+
+/* Lesson 128 Windowing Batches
+ * 
+ * Okay so we can see the regular batches are coming in. But its not useful to just get the count. 
+ */
+}

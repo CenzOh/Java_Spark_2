@@ -1,0 +1,51 @@
+package com.virtualpairprogrammers;
+
+public class Lesson119 {
+
+/* Lesson 119 Overview and Matrix Factorization
+ * 
+ * This is our second unsupervised model to look at. It is useful for recommender systems. Lets clarify what a recommender system is. Remember, our last model can be used for this!
+ * Suppose we run an online music streaming service. Lots of song in the database and we used k means clustering to group each song into a category based on features like which country
+ * the performer is in, tempo of song, length, etc.
+ * 
+ * songID | Genre          | Performer Country | Tempo (BPM) | Length | Loudness
+ * 1	  | Pop	           | USA 		       | 140         | 195    | -8.0
+ * 2	  | Classical      | Italy             | 90          | 224	  | -12,4
+ * 3	  | Easy Listening | USA	           | 110		 | 212	  | -10.6
+ * ...
+ * 
+ * Every time a customer listens to one of our songs, we record wich cateogry that song comes from. So we build it up each user to see which songs were in a particular cluster than
+ * another cluster
+ * 
+ * ... Loudness | Cluster
+ * ... -8.0 	| 0
+ * 	   -12.4    | 1
+ *     -10.6    | 0
+ * 
+ * UserID | Song of CHoice cluster
+ * 1 	  | 0,0,1,0,1
+ * 
+ * Once we get all the info, we can make some recommendation. Ex - user 1 seems to listen a lot to cluster 0 and 1 so we can recommend to this user songs they have NOT listened to yet that
+ * comes from THOSE clusters. So we are making recommendations based on features of underlying product and what the user buys / listens to of those features.
+ * The model we will look at will give a different way of providing this functionality called a recommender system. The model is called Matrix Factorization.
+ * 
+ * Our example will use the Virtual Pair Programmer data based on their courses. We want to recommend to customers what course they want to watch next. 
+ * Approach for MAtrix Factorization: over time we record which customers watch which courses, we dont ask our customers to rate each course, but lets pretend they do to make it easier to understand.
+ * Below example, three customers, all taken courses A, B, and C and they given each course a rating.
+ * 
+ * Customer | Course A | Course B | Course C
+ * 1		| 5		   | 4		  | 1
+ * 2		| 3		   | 3		  | 5
+ * 3		| 5		   | 4		  | 1
+ * 
+ * 4 	    |		   | 4		  | 1
+ * 
+ * To read this, customer 1 gave course A a 5 star rating and course C a 1 star rating. Now lets say new cusomter 4 comes along. They watch B and C and give it a rating. Interestingly,
+ * this makes customer 4 look very much like customer 1 and 3. We may GUESS that if they watched course A they would give it a 5 star rating. 
+ * 
+ * BUT, Matrix Factorization will have us create a big table with all our customers being the lows and the columns being the different products the customer may want to rate.
+ * We build a model that tries to fill in the gaps. We guess the rating. Based on the guessed rating, it can help us decide it we should recommend the product or not to that customer. 
+ * Note - the actual model name is called Collaborative Filtering. Matrix Factorization is one of the few approaches on HOW to do collaborative filtering. This approach does have 
+ * different mathematical algorithms that can do the calculation and the one spark implemented is called alternating least squares ALS.   
+ */
+}

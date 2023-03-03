@@ -1,0 +1,10 @@
+package com.virtualpairprogrammers;
+
+public class Lesson139 {
+
+/* Lesson 139 Data Sink
+ * 
+ * We have more formal api in spark structured streaming to write results. In DStreams we had to do this annoying print. We could have in place written to a file. 
+ * Not obv how often it will be printed structured streaming instead has a formal cocnept called data sink. Read from the source, process it, output to a data sink
+ */
+}

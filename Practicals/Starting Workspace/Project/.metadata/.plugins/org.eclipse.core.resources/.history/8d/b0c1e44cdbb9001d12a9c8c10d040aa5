@@ -1,0 +1,20 @@
+package com.virtualpairprogrammers;
+
+public class Lesson123 {
+
+/* Lesson 123 DStreams
+ * 
+ * DStreams simple model. View the model of how it works at https://spark.apache.org/docs/latest/streaming-programming-guide.html
+ * 
+ * Input data stream -> spark streaming -> batches of input data -> spark engine -> batches of processed data -> 
+ * 
+ * This picture says it all. WE have some input data that continuously streams. Events constantly coming in at random intervals. Like price update, log message, user transactions, etc.
+ * This goes into spark streaming module which backs the input data into blocks. We will read in this data for unbounded amount of time. Regular intervals we can configure it
+ * such as every second spark streaming creates and RDD of the data received in that last second. Then the RDDs fed into spark engine, then we do our programming
+ * and have operations on those RDs. It will feel like we are working on one RDD but under the hood there are an unbounded amount of RDDs all gathered together into this
+ * abstraction called DStreams. So DStreams is batches of input data combined together.
+ * 
+ * DStream stands for Discretized stream, it means we have continuous data stream coming in and under the hood spark converts it into a series or discrete of individula batches of
+ * input data. Traditional DStreams version in hte spark doc is called `Spark Streaming Programming Guide`. 
+ */
+}

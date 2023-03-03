@@ -1,0 +1,13 @@
+package com.virtualpairprogrammers;
+
+public class Lesson137 {
+
+/* Lesson 137 Structured Streaming Overview
+ * 
+ * We experienced spark structured streaming with abstraction of DStream. lets us use RDDs. API with weird RDD like flavor. Under teh hood spark UI uses RDDs built for each batch
+ * More recently new api introduced called structured streaming. This gives us access to the spark sql model. We can use dataframes, datasets, or sql api whatever we like.
+ * 
+ * Spark docs have a separate section for structured streaming. Again obv difference between structured stream and DStreams are the APIs. However it look slike dev defforts are
+ * directed to structured streaming. 
+ */
+}

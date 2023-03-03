@@ -159,6 +159,7 @@
   <classpathentry kind="var" path="M2_REPO/org/apache/arrow/arrow-memory/0.8.0/arrow-memory-0.8.0.jar" sourcepath="M2_REPO/org/apache/arrow/arrow-memory/0.8.0/arrow-memory-0.8.0-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/joda-time/joda-time/2.9.9/joda-time-2.9.9.jar" sourcepath="M2_REPO/joda-time/joda-time/2.9.9/joda-time-2.9.9-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/com/carrotsearch/hppc/0.7.2/hppc-0.7.2.jar" sourcepath="M2_REPO/com/carrotsearch/hppc/0.7.2/hppc-0.7.2-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/apache/spark/spark-streaming_2.11/2.3.2/spark-streaming_2.11-2.3.2.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/mortbay/jetty/jetty/6.1.26/jetty-6.1.26.jar" sourcepath="M2_REPO/org/mortbay/jetty/jetty/6.1.26/jetty-6.1.26-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/com/sun/jersey/jersey-core/1.9/jersey-core-1.9.jar" sourcepath="M2_REPO/com/sun/jersey/jersey-core/1.9/jersey-core-1.9-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/com/sun/jersey/jersey-server/1.9/jersey-server-1.9.jar" sourcepath="M2_REPO/com/sun/jersey/jersey-server/1.9/jersey-server-1.9-sources.jar"/>
@@ -168,7 +169,6 @@
   <classpathentry kind="var" path="M2_REPO/tomcat/jasper-runtime/5.5.23/jasper-runtime-5.5.23.jar"/>
   <classpathentry kind="var" path="M2_REPO/commons-el/commons-el/1.0/commons-el-1.0.jar" sourcepath="M2_REPO/commons-el/commons-el/1.0/commons-el-1.0-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/apache/spark/spark-mllib_2.11/2.3.1/spark-mllib_2.11-2.3.1.jar" sourcepath="M2_REPO/org/apache/spark/spark-mllib_2.11/2.3.1/spark-mllib_2.11-2.3.1-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/apache/spark/spark-streaming_2.11/2.3.1/spark-streaming_2.11-2.3.1.jar" sourcepath="M2_REPO/org/apache/spark/spark-streaming_2.11/2.3.1/spark-streaming_2.11-2.3.1-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/apache/spark/spark-graphx_2.11/2.3.1/spark-graphx_2.11-2.3.1.jar" sourcepath="M2_REPO/org/apache/spark/spark-graphx_2.11/2.3.1/spark-graphx_2.11-2.3.1-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/apache/spark/spark-mllib-local_2.11/2.3.1/spark-mllib-local_2.11-2.3.1.jar" sourcepath="M2_REPO/org/apache/spark/spark-mllib-local_2.11/2.3.1/spark-mllib-local_2.11-2.3.1-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/scalanlp/breeze_2.11/0.13.2/breeze_2.11-0.13.2.jar" sourcepath="M2_REPO/org/scalanlp/breeze_2.11/0.13.2/breeze_2.11-0.13.2-sources.jar"/>

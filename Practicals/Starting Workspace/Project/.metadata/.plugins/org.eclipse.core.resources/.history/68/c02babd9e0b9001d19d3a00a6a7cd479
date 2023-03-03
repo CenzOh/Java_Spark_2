@@ -1,0 +1,59 @@
+package com.virtualpairprogrammers;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.spark.SparkConf;
+import org.apache.spark.streaming.Durations;
+import org.apache.spark.streaming.api.java.JavaStreamingContext;
+
+public class Lesson124 {
+
+/* Lesson 124 Starting a streaming job. 
+ * 
+ * We will write a streaming job to constantly take in this stream of messages. Spark streaming is NOT a part of spark core so we have to add a dependency into our 
+ * pom.xml. Add the following to match with our ver of spark core:
+ * 
+ *  <dependency>
+	      <groupId>org.apache.spark</groupId>
+	      <artifactId>spark-streaming_2.11</artifactId>
+	      <version>2.3.2</version>
+    </dependency>
+ *
+ * Again the 2.11 is the scala version. Make sure we have same 2.3.2 ver as spark core. Then run pom.xml as a maven build. GOal eclipse:eclipse and eclipse:clean.
+ * What this does is we tell eclipse to download all the jars and have update the local build path inside eclipse. Find all jar files, download. Once it says build success go to the project
+ * right click, refresh. Jar files should ahve spark-streaming_2.11 jar files.
+ * 
+ * NOTE TO SELF after adding this and following the instructions my project was unable to compile a lot of things it says issue is something like source level 1.5 or higher? Not sure
+ * going to finish the module as is anyway.
+ * 
+ * One of features of spark streaming is similar to how we work in regular spark when doing batch jobs. Main difference is setup is a bit different. 
+ * First part with setting up conf object is same as before! Java string context is a bit differnt. We can compare spark streaming example code with our LogCountRDDVersion.java.
+ * We first set up the entry point for the spark conf object. Theres an interesting parameter in java streaming conetxt, Durations. THis tells us how big do we want the
+ * batch to be? Example says .seconds(1). This means there will be a new build every second! 
+ * 
+ * Lets save time and reuse some code from log count rdd version .java file. We will make a new class called LogStreamAnalysis
+ */
+	@SuppressWarnings("resource") 
+	public static void main(String[] args) {
+		System.setProperty("hadoop.home.dir", "c:/hadoop"); 
+		Logger.getLogger("org.apache").setLevel(Level.WARN); 
+	
+		SparkConf conf = new SparkConf().setMaster("local[*]").setAppName("startingSpark");
+		
+/* we need a java streaming context objec. Next in the javastreamingcontext we need to specify how big the batches will be. If we have slow stream of data, dont have to make it 1 second
+ * Smaller batch size will result in continuous stream of results. If we have 1 hour between each one, we will see results every hour even tho constantly recieving data. lets do 30 seconds
+ */
+		JavaStreamingContext sc = new JavaStreamingContext(conf, Durations.seconds(30));//sc for spark context usually called jsc but thats kinda ugly
+		
+/* Make sure to pick correct Duration, its in java.time and its in scala. So import the spark.streaming version. Import java streaming context with CTRL SHIFT O as well.
+ * 
+ * On the streaming context obj we have various methods to connect to a streaming source. Idea is to go to prod standard system like kafka (will look at next section). The built in
+ * options are mainly for testing and streaming. .fileStream() may be useful in practice. .queueStream() sounds like we can connect to a messenger but its just a java collection from the java.util
+ * package. We can add elements to the collection and then it becomes the contents of the stream. We are looking for socket stream. Several versions. Our socket is a stream of text
+ * so rawSocketStream() may not help. Lets use socketTextStream()
+ */
+		sc.socketTextStream("localhost", 8989); //first param is host name, then second param is port
+		
+		
+	}
+}

@@ -1,0 +1,20 @@
+package com.virtualpairprogrammers;
+
+public class Lesson137 {
+
+/* Lesson 137 Structured Streaming Overview
+ * 
+ * We experienced spark structured streaming with abstraction of DStream. lets us use RDDs. API with weird RDD like flavor. Under teh hood spark UI uses RDDs built for each batch
+ * More recently new api introduced called structured streaming. This gives us access to the spark sql model. We can use dataframes, datasets, or sql api whatever we like.
+ * 
+ * Spark docs have a separate section for structured streaming. Again obv difference between structured stream and DStreams are the APIs. However it look slike dev defforts are
+ * directed to structured streaming. 
+ * 
+ * Devs are working on continuous processing feature. Low latencies, end to end processing. Not batch size. Trying to get batch sizes down as small as possible. WHen we program this,
+ * we dont have easy access to batch size but they are hidden away from us. CLear indication they want us to forget about the batch size and think about the continuous streams of data. 
+ * 
+ * 
+ */
+	
+	
+}

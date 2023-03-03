@@ -1,0 +1,9 @@
+package com.virtualpairprogrammers;
+
+public class Lesson129 {
+
+/* Lesson 129 Overview of Kafka
+ * 
+ * Other tahn set up streaming and start process, analysis, filters, maps, reduce by key same thing we would do in spark. 
+ */
+}

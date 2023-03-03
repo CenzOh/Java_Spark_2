@@ -1,0 +1,59 @@
+package com.virtualpairprogrammers;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaPairRDD;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
+
+import scala.Tuple2;
+
+public class Lesson124 {
+
+/* Lesson 124 Starting a streaming job. 
+ * 
+ * We will write a streaming job to constantly take in this stream of messages. Spark streaming is NOT a part of spark core so we have to add a dependency into our 
+ * pom.xml. Add the following to match with our ver of spark core:
+ * 
+ *  <dependency>
+	      <groupId>org.apache.spark</groupId>
+	      <artifactId>spark-streaming_2.11</artifactId>
+	      <version>2.3.2</version>
+    </dependency>
+ *
+ * Again the 2.11 is the scala version. Make sure we have same 2.3.2 ver as spark core. Then run pom.xml as a maven build. GOal eclipse:eclipse and eclipse:clean.
+ * What this does is we tell eclipse to download all the jars and have update the local build path inside eclipse. Find all jar files, download. Once it says build success go to the project
+ * right click, refresh. Jar files should ahve spark-streaming_2.11 jar files.
+ * 
+ * NOTE TO SELF after adding this and following the instructions my project was unable to compile a lot of things it says issue is something like source level 1.5 or higher? Not sure
+ * going to finish the module as is anyway.
+ * 
+ * One of features of spark streaming is similar to how we work in regular spark when doing batch jobs. Main difference is setup is a bit different. 
+ * First part with setting up conf object is same as before! Java string context is a bit differnt. We can compare spark streaming example code with our LogCountRDDVersion.java.
+ * We first set up the entry point for the spark conf object. Theres an interesting parameter in java streaming conetxt, Durations. THis tells us how big do we want the
+ * batch to be? Example says .seconds(1). This means there will be a new build every second! 
+ * 
+ * Lets save time and reuse some code from log count rdd version .java file. We will make a new class called LogStreamAnalysis
+ */
+	@SuppressWarnings("resource") 
+	public static void main(String[] args) {
+		System.setProperty("hadoop.home.dir", "c:/hadoop"); 
+		Logger.getLogger("org.apache").setLevel(Level.WARN); 
+	
+		SparkConf conf = new SparkConf().setMaster("local[*]").setAppName("startingSpark");
+		
+/* we need a java streaming context objec
+ * 
+ */
+		JavaStreamingContex sc = new JavaStreamingContext(conf, );//sc for spark context usually called jsc but thats kinda ugly
+		
+		
+	}
+}

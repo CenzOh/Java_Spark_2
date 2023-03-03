@@ -1,0 +1,20 @@
+package com.virtualpairprogrammers;
+
+public class Lesson131 {
+
+/* Lesson 131 Using Kafka Event Simulator
+ * 
+ * Now our kafka server is setup. We can create our first kafka topic. We called it view records. We will be working for a video streaming platform such as YouTube. Idea is to track
+ * which are the most popular videos / most viewings. Not counting just individual viewing. COunt popularity second by second. As a user watches the video, an event will be sent
+ * from the video player to the kafka player. We can do it by 5 seconds. Decent level of granularity. Events stream to our servers, capture them.
+ * 
+ * We have a viewing-figures-generation which can simulate the video streaming platform. Import the proejct into the worksapce, can do it with create new java project,
+ * name is viewing-figures-generation, auto configure JRE. The aim of the project  is to simulate the events and send to kafka server. 
+ * The pom.xml only has dependency of kafka. Allows us to call kafka from java code. Run the pom.xml as a maven build like usual. Refresh the project. We also have one calss in the project
+ * called ViewReportsSimulator.java. Configure the kafka clients with some properties. Where is our kafka server we say its on localhost 9092. 
+ * 
+ * When we send a message to kafkae we can decide how safe we want the op to be. In acks, when we say all, we want to wait until that message successfully recieved on all
+ * nodes of the kafka cluster. 
+ * 
+ */
+}

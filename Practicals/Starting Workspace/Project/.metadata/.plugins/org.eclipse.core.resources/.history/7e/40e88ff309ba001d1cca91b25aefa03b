@@ -1,0 +1,63 @@
+package com.virtualpairprogrammers;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.streaming.OutputMode;
+import org.apache.spark.sql.streaming.StreamingQuery;
+import org.apache.spark.sql.streaming.StreamingQueryException;
+import org.apache.spark.sql.streaming.Trigger;
+import org.apache.spark.streaming.Durations;
+
+public class Lesson141 {
+
+/* Lesson 141 What is Batched Size in Structured Streaming?
+ * 
+ * No where in here we set the batch size. Something odd happening really. SO look at this first batch took 60 seconds but we know second one will take another 60 seconds. 
+ * Well batch size by default is something like 60 seconds right? You would see the stream on the console is pretty quikc but in eclipse its not? 
+ * In structured streaming it stopped thinking about batches. OVerall goal for the team. As we stream teh data, make it as real time as time. 
+ * Works like a trigger, like a batch size that we saw in these streams. Can be set. Micro batches is a batch and can be obv why its called that. We can call
+ * the .trigger() method an dpass in an object of type .trigger Processing time to set duration.
+ * Now why they burried this is becasue the default is facinating. If not rigger is set, then by default query will be executed in micro batch mode where it will
+ * run as SOOn as there is an event.
+ */
+	
+	@SuppressWarnings("resource") 
+	public static void main(String[] args) throws StreamingQueryException {
+		System.setProperty("hadoop.home.dir", "c:/hadoop"); 
+		Logger.getLogger("org.apache").setLevel(Level.WARN); 
+		Logger.getLogger("org.apache.spark.storage").setLevel(Level.ERROR); 
+		
+//boilerplate ^^^^^^
+		SparkSession session = SparkSession.builder()
+				.master("local[*]")
+				.appName("structuredViewingReport")
+				.getOrCreate();
+		
+		Dataset<Row> df = session.readStream() 
+				.format("kafka")
+				.option("kafka.bootstrap.servers", "localhost:9092")
+				.option("subscribe",  "viewrecords")
+				.option("kafka.value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer")
+				.load(); 
+		
+//start dataframe ops
+		df.createOrReplaceTempView("viewing_figures");
+		
+//key, value, timestamp
+		Dataset<Row> results = session.sql("select window, cast (value as string) as course_name, sum(5) as seconds_watched from viewing_figures group by window(timestamp, '1 minute') course_name"); 
+		
+		StreamingQuery query = results 
+			.writeStream()
+			.format("console")
+			.outputMode(OutputMode.Update()) 
+			.option("truncate", false)
+			.option("numRows", 50)
+//			.trigger(Trigger.ProcessingTime(Durations.seconds(1))) //will work similar how it worked in DStreams
+			.start(); 
+		
+		query.awaitTermination();
+	}
+}

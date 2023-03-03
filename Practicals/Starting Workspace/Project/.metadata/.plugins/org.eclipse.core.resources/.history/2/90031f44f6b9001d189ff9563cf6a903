@@ -1,0 +1,10 @@
+package com.virtualpairprogrammers;
+
+public class Lesson130 {
+
+/* Lesson 130 Kafka install
+ * 
+ * Kafka would usually be deployed on a distributed cluster of instances. We want to run locally for development process. On kafka home page we can click on the quickstart guide
+ * to get this running locally. 
+ */
+}

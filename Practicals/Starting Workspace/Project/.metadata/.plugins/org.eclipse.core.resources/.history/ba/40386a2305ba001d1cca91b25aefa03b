@@ -1,0 +1,40 @@
+package com.virtualpairprogrammers;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
+
+public class Lesson138 {
+
+/* Lesson 138 Data Sink
+ * 
+ * We have more formal api in spark structured streaming to write results. In DStreams we had to do this annoying print. We could have in place written to a file. 
+ * Not obv how often it will be printed structured streaming instead has a formal cocnept called data sink. Read from the source, process it, output to a data sink
+ */
+	@SuppressWarnings("resource") 
+	public static void main(String[] args) throws InterruptedException {
+		System.setProperty("hadoop.home.dir", "c:/hadoop"); 
+		Logger.getLogger("org.apache").setLevel(Level.WARN); 
+		Logger.getLogger("org.apache.spark.storage").setLevel(Level.ERROR); 
+		
+//boilerplate ^^^^^^
+		SparkSession session = SparkSession.builder()
+				.master("local[*]")
+				.appName("structuredViewingReport")
+				.getOrCreate();
+		
+		Dataset<Row> df = session.readStream() //compiler error because we need to set options on this string. Havent mentioned kafka yet. call option method to set key value pairs
+				.format("kafka")
+				.option("kafka.bootstrap.servers", "localhost:9092")
+				.option("subscribe",  "viewrecords")
+				.load(); //final line to make this work.
+		
+//start dataframe ops
+		df.createOrReplaceTempView("viewing_figures");
+		
+//key, value, timestamp
+		session.sql("select value from viewing_figures");
+	}
+}

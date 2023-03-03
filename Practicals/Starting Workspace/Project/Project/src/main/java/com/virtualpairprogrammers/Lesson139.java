@@ -1,0 +1,56 @@
+package com.virtualpairprogrammers;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.streaming.OutputMode;
+import org.apache.spark.sql.streaming.StreamingQuery;
+import org.apache.spark.sql.streaming.StreamingQueryException;
+
+public class Lesson139 {
+
+/* Lesson 139 Structured Streaming Output Modes
+ * 
+ * This is not just a change of api but a whole new model. Output model is something that is not in DStreams. We can choose from append, completed, or updates.
+ * Structured streaming writes these results to a table. We can decide what parts of the table we want to write. Our table is not particularly big since we aggregate by course_name
+ * We can choose to use the .update() option which only updates any rows in the table that changed since last batch.
+ * COmplete gives us all the rows in results table.
+ */
+	
+	@SuppressWarnings("resource") 
+	public static void main(String[] args) throws StreamingQueryException {
+		System.setProperty("hadoop.home.dir", "c:/hadoop"); 
+		Logger.getLogger("org.apache").setLevel(Level.WARN); 
+		Logger.getLogger("org.apache.spark.storage").setLevel(Level.ERROR); 
+		
+//boilerplate ^^^^^^
+		SparkSession session = SparkSession.builder()
+				.master("local[*]")
+				.appName("structuredViewingReport")
+				.getOrCreate();
+		
+		Dataset<Row> df = session.readStream() 
+				.format("kafka")
+				.option("kafka.bootstrap.servers", "localhost:9092")
+				.option("subscribe",  "viewrecords")
+				.option("kafka.value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer")
+				.load(); 
+		
+//start dataframe ops
+		df.createOrReplaceTempView("viewing_figures");
+		
+//key, value, timestamp
+		Dataset<Row> results = session.sql("select cast (value as string) as course_name, sum(5) as seconds_watched from viewing_figures group by course_name order by seconds_watched desc"); 
+//cant run with no aggregates in complete mode, get an error
+		
+		StreamingQuery query = results 
+			.writeStream()
+			.format("console")
+			.outputMode(OutputMode.Complete()) //doing with update may be easier since we dont have to worry about spark getting everything into right format
+			.start(); 
+		
+		query.awaitTermination();
+	}
+}

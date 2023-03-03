@@ -1,0 +1,13 @@
+//used in spark streaming to do something similar to netcat to receive input data. lesson 123
+package com.virtualpairprogrammers;
+
+import java.io.IOException;
+
+public class LoggingServer {
+
+	public static void main(String[] args) throws IOException, InterruptedException{
+		
+		ServerSocket echoSocket = new ServerSocket(8989);
+		Socket socket = echoSocket.accept();
+	}
+}

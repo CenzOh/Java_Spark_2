@@ -1,0 +1,7 @@
+//used in spark streaming to do something similar to netcat to recieve input data. lesson 123
+package com.virtualpairprogrammers;
+
+public class LoggingServer {
+
+	public
+}

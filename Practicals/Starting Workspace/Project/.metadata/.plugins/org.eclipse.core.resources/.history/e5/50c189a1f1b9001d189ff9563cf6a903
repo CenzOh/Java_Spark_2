@@ -1,0 +1,75 @@
+package com.virtualpairprogrammers;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.spark.SparkConf;
+import org.apache.spark.streaming.Durations;
+import org.apache.spark.streaming.api.java.JavaDStream;
+import org.apache.spark.streaming.api.java.JavaPairDStream;
+import org.apache.spark.streaming.api.java.JavaReceiverInputDStream;
+import org.apache.spark.streaming.api.java.JavaStreamingContext;
+
+import scala.Tuple2;
+
+public class Lesson126 {
+
+/* Lesson 126 Streaming Aggregation
+ * 
+ * Last time we got the streaming up and running. We have flakey sockets not prod standard so lets move onto Kafka based implementation which is more prod standard. 
+ * But we proved the principle of spark streaming. Lets also do aggregation on the batch. Terminate both and lets add some things.
+ * Lets count how many inofs, WARNs, DEBUGs. Log level is separated from timestamp with a comma. Lets actually remove the time stamp
+ */
+	
+	@SuppressWarnings("resource") 
+	public static void main(String[] args) throws InterruptedException {
+		System.setProperty("hadoop.home.dir", "c:/hadoop"); 
+		Logger.getLogger("org.apache").setLevel(Level.WARN); 
+		Logger.getLogger("org.apache.spark.storage").setLevel(Level.ERROR); 
+	
+		SparkConf conf = new SparkConf().setMaster("local[*]").setAppName("startingSpark");
+
+		JavaStreamingContext sc = new JavaStreamingContext(conf, Durations.seconds(2)); //changing batch size to be quicker
+
+		JavaReceiverInputDStream<String> inputData = sc.socketTextStream("localhost", 8989);
+
+		JavaDStream<String> results = inputData.map(item -> item); //updated method to be a string so we can have string method
+		results.print(); 
+
+//		results = results.map(rawLogMessage -> rawLogMessage.split(",")[0]); //split on commas, extract first element which is log level
+		JavaPairDStream<String, Long> pairDStream = results.mapToPair(rawLogMessage -> new Tuple2<> (rawLogMessage.split(",")[0], 1L)); //import java pair D Stream
+// we use mapToPair() this time, use tuple2 of string for first param with log message, and long for second param which counts num of occurances
+		
+		pairDStream = pairDStream.reduceByKey((x,y) -> x + y); //reduce by key to add up our total count of ERRORs, WARNs, etc.
+		
+		pairDStream.print();
+/* 
+ * 
+ * Great it works
+ */
+		
+		
+
+		sc.start();
+		sc.awaitTermination();
+		
+/*  Lets start both up and lets see what ouptuts
+ * -------------------------------------------
+Time: 1677862710000 ms
+-------------------------------------------
+DEBUG
+WARN
+WARN
+DEBUG
+DEBUG
+DEBUG
+DEBUG
+DEBUG
+DEBUG
+WARN
+...
+
+ * Okay now we need a count
+ */
+		
+	}
+}

@@ -1,0 +1,20 @@
+package com.virtualpairprogrammers;
+
+public class Lesson112 {
+
+/* Lesson 112 True / False Negatives and Positives
+ * 
+ * So far we learned how to use linear regression model with Spark. In fact we have seen entire syntax and process flow of spark ML algorithms. We can swap linear regression with any other
+ * model type and use exact same syntax and structure. Every model in spark is built from Transformers and Estimators. We have to pick the right transformers and estimators properties
+ * Correctly for the model type we want to use. Our second model type is logistical regression, similar to linear reg. Difference is linear reg predicts a numerical outcome / wide range
+ * of numbers available as result of outcome. Last chapter ex was predicting num of videos a customer may watch from 0 - very high number.
+ * 
+ * Log reg is predicting a boolean value such as is a customer a good customer or not. Fraud or real transaction, spam or not spam email examples. Label we will input will either be 
+ * 0 or 1. Outcomes will be between a 0 or 1. Probability of events occurring.  Ex - outcome is 0.5, we can say its true. If its less than 0.5, false. Inputs to the model is same as
+ * linear regression. Just remember labels are 0 or 1. Features are the same. Model fitting parameters also the same. Reg param parameter and elastic net parameter.
+ * 
+ * Accuracy is different. log reg d/n have r2 and root mean squared error. Our measure of accuracy is called accuracy. This is the % of correct predictions. Ex - if our input was 100 entries
+ * and model predicted 91 percent of them correctly, our accuracy will be 0.91. Closer accuracy is to 1, the better. Misclassification is the opposite of accuracy. Proportion of
+ * predictions that are incorrect. Sometimes we want more than just accuracy and misclassification rate. 
+ */
+}

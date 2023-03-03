@@ -1,0 +1,10 @@
+package com.virtualpairprogrammers;
+
+public class Lesson117 {
+
+/* Lesson 117 Random FOrests
+ * 
+ * Lets try to improve accuracy. One thing is increase depth. But a cool thing to do is random forest. How do they work? So far we built one tree. When working with regression models
+ * we use the train validation split to tell spark to make a lot of models and pick the best one. Random Forests is the train validation split if decision trees.
+ */
+}

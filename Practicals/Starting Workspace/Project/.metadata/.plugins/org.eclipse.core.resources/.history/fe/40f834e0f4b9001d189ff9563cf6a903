@@ -1,0 +1,16 @@
+package com.virtualpairprogrammers;
+
+public class Lesson129 {
+
+/* Lesson 129 Overview of Kafka
+ * 
+ * Other tahn set up streaming and start process, analysis, filters, maps, reduce by key same thing we would do in spark. Great but our demo was using a brittle socket connection.
+ * Wouldnt be doing that in real life. Lets switch to common component in streaming architecture, apache kafka. Kafka is used in combo with spark when it comes to streaming,
+ * we will have a basic overview of it. Not deep detail. High level. 
+ * 
+ * What is kafka and what can it do? Can view the home page on https://kafka.apache.org Doesnt give too much to explain it. Instructor explains that kafka is difficult to explain
+ * since it has a ton of aspects to it. THey can be exploited in differnt ways. Kafka iss a very general purpose tool and can be used in different scenarios in an architecture.
+ * At first you may think kafka is a message broker. THink apache active MQ or Rabbit MQ. THis is where we have a message broker, central component (kafka) and clients send messages
+ * to the broker. Can be long series of messages. Later time, differnet clients of broker read the messages from the broker. So this makes kafka a queue. 
+ */
+}

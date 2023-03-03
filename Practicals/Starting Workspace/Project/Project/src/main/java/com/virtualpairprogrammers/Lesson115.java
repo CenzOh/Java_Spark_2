@@ -1,0 +1,212 @@
+package com.virtualpairprogrammers;
+
+import static org.apache.spark.sql.functions.callUDF;
+import static org.apache.spark.sql.functions.col;
+import static org.apache.spark.sql.functions.lit;
+import static org.apache.spark.sql.functions.when;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.spark.ml.classification.DecisionTreeClassificationModel;
+import org.apache.spark.ml.classification.DecisionTreeClassifier;
+import org.apache.spark.ml.feature.IndexToString;
+import org.apache.spark.ml.feature.StringIndexer;
+import org.apache.spark.ml.feature.VectorAssembler;
+import org.apache.spark.ml.regression.DecisionTreeRegressionModel;
+import org.apache.spark.ml.regression.DecisionTreeRegressor;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.api.java.UDF1;
+import org.apache.spark.sql.types.DataTypes;
+
+public class Lesson115 {
+
+/* Lesson 115 Building the DT Model
+ * 
+ * With the other supervised models, we want to get our data to be in the correct format. SO we want one col called label and one col called features. We want our label to be num 1 or 0.
+ * 1 - paying customer. 0 - non paying customer. The numbers here are categories. We can have any num of values and as far as spark is concerned, these are categories so no hierarchy. 
+ * Predict payments_made col. We dont have enough data to predict if it will be 1, 6, or 12 so lets simply predict will it be 0 or 1 >=. So lets write some code to change payments_made
+ * to be a 0 or a 1. If its 2 or higher, make it a one. DO this at the same time we are changing the countries
+ */
+	
+	public static UDF1<String,String> countryGrouping = new UDF1<String,String>() {
+
+		@Override
+		public String call(String country) throws Exception {
+			List<String> topCountries = Arrays.asList(new String[] {"GB","US","IN","UNKNOWN"});
+			List<String> europeanCountries = Arrays.asList(new String[]
+					{"BE","BG","CZ","DK","DE","EE","IE","EL","FR","HR","IT","CY","LV","LT","LU","HU","MT","NL","AT","PL","PT","RO","SI","SK","FI","SE","CH","IS","NO","LI","EU"});
+
+			if (topCountries.contains(country)) return country;
+			if (europeanCountries.contains(country)) return "EUROPE";
+			else return "OTHER";
+		}
+	};
+	
+	public static void main(String[] args) {
+	
+		System.setProperty("hadoop.home.dir", "c:/hadooop"); 
+		Logger.getLogger("org.apache").setLevel(Level.WARN);
+		
+		SparkSession spark = SparkSession.builder()
+				.appName("VPP Chapter Views")
+				.config("spark.sql.warehouse.dir", "file:///c:/tmp/")
+				.master("local[*]")
+				.getOrCreate();
+		
+		spark.udf().register("countryGrouping", countryGrouping, DataTypes.StringType); //we can register UDF before reading in the file
+		
+		Dataset<Row> csvData = spark.read()
+				.option("header",  true)
+				.option("inferSchema", true)
+				.csv("src/main/resources/chp10data/vppFreeTrials.csv");
+		
+		csvData = csvData.withColumn("country", callUDF("countryGrouping", col("country")) ) //add on here
+				.withColumn("label",  when(col("payments_made").geq(1), lit(1)).otherwise(lit(0))); //here lets change our label (payments made) if value is over 1, return literal 1 value otherwise 0
+		
+/* payments_made | label | ...
+ * 1			 | 1
+ * 2			 | 1
+ * 0			 | 0
+ * ...
+ * 
+ * Great it works! When theres a payment made thats greater than 1, the label is just a 1. Onto the features, we want the country, rebill_period, chapter_access and seconds_watched
+ * to be our features. country and rebill_period will be categorical features. Chapter_access and seconds_watched are numerical. When we work with DTs we need to index these fields
+ * but first encode them into vectors. Unlike linear or log regression, we DONT need to do oneHotEncoding process. We had to use the oneHot for log and linear reg because the mathematics
+ * behind those models uses the numerical values in each feature as a ranking or order value. Remember we had to create multiple columns with a 1 or 0. In DT algorithm, they dont
+ * work same way. Each value is treated distinctly with no underlying meaning attributed to that value. We need all the categorical data to be numeric but we dont need to encode them
+ * into vectors of ones. The encoding still works but it is recommended to NOT do this because it makes the DT at the end impossible to interpret. 
+ * 
+ * Because countries are strings, we need to index them. The rebill_period is already a number so lets use it exactly as it is even tho its cateogrical data dont do anything to it.
+ * Again recall if we do linear or log regression we will need to oneHotEncode the rebill period since it has three values but DONT assume 12 is higher than 6 which is higher than 1. In DT
+ * dont do anything to cateogrical data that is already a number. So lets change country to an index
+ */
+		StringIndexer countryIndexer = new StringIndexer();
+		csvData = countryIndexer.setInputCol("country")
+					  .setOutputCol("countryIndex")
+					  .fit(csvData).transform(csvData);
+		
+		csvData.show();
+
+/* This will actually not be usable in the longterm but first lets see our results
+ * country | countryIndex
+ * UNKNOWN | 3.0
+ * US	   | 0.0
+ * GB	   | 5.0
+ * ...
+ * 
+ * We now have our countries as numbers. Prior to building our vector assembler of features, theres another step to take. When we look at results it will say:
+ * if rebill_period = 6, chapter_access_count is BIGGER than 7, result is something like this. How does it work with countries? If a country is 1 or 3, we need to know what that means to 
+ * interpret it. We want a list of countries with which index num they have been given. Lets get this list using more production standard code and print to console.
+ * 
+ * Spark gives us a function to find out which num corresponds to which country, its called .indexToString(). It can do it because indexing gets stored in memory
+ */
+		Dataset<Row> countryIndexes = csvData.select("countryIndex").distinct(); //distinct for unique values
+		countryIndexes.show();
+
+/* countryIndex |
+ * 0.0          |
+ * ...
+ */
+		
+		IndexToString indexToString = new IndexToString(); //import indexToString
+		indexToString.setInputCol("countryIndex").setOutputCol("value").transform(countryIndexes).show(); //output col name is value, something we havent used before. can call .transform() not .fit()
+		
+		
+/* countryIndex | value
+ * 0.0 			| US
+ * 1.0 			| OTHER
+ * 4.0 			| EUROPE
+ * 3.0 			| UNKNOWN
+ * 2.0 			| IN
+ * 5.0 			| GB
+ * 
+ * This is important to know. We dont even need to store this in a separate dataset. Lets write it in one line. select singel column distinct INTO the transform method.
+ * And we are not using the index to string obj we dont have to call it, just call the new method at the beginning.
+ */
+		new IndexToString()
+			.setInputCol("countryIndex")
+			.setOutputCol("value")
+			.transform(csvData.select("countryIndex").distinct())
+			.show();
+		
+/* So now we have the CSV data and we can start doing the vectorassembler and a separate list of all our country indexes to interpret the results.
+ * Lets do the vector assembler, similar to before
+ */
+		VectorAssembler vectorAssembler = new VectorAssembler(); //instantiate
+		vectorAssembler.setInputCols(new String[] {"countryIndex", "rebill_period", "chapter_access_count", "seconds_watched"}); //col of our features
+		vectorAssembler.setOutputCol("features"); //has to be called this for our model
+		
+		Dataset<Row> inputData = vectorAssembler.transform(csvData).select("label", "features");
+		inputData.show();
+
+/* label | features
+ * 1     | [3.0,1.0,3.0,9406.0]
+ * 0     | [0.0,1.0,7.0,1354.0]
+ * ...
+ * 
+ * Next split the data into two, some to test. We wont do parameter grids this time
+ */
+		Dataset<Row>[] trainingAndHoldoutData = inputData.randomSplit(new double[] {0.8, 0.2}); //80% training 20% holdout
+		Dataset<Row> trainingData = trainingAndHoldoutData[0];
+		Dataset<Row> holdoutData = trainingAndHoldoutData[1];
+		
+/* We are doing the DT regression model / DT classification model. Similar to linear and log reg approaches. If we use a DT regression, we end up with num on a continuous value scale as predictor.
+ * If we use DT classifier, we will have fixed value outcome such as 1 or 0. This is what we want. More normal to use DT classifiers than regressors but we will build our
+ * model with regressor first then swap to correct model type. Syntax will be very familiar. This instace we use DT regressor. Instantiate and import per usual.
+ * One param to set, the max depth which is how many branches we want on our tree. Lets do 3 for now
+ */
+		DecisionTreeRegressor dtRegressor = new DecisionTreeRegressor();
+		dtRegressor.setMaxDepth(3);
+		
+		DecisionTreeRegressionModel model = dtRegressor.fit(trainingData); //save the model separately so we can look at and understand whats really going on. 
+		
+		model.transform(holdoutData).show();
+		
+/* label | features            | prediction
+ * 0     | [0.0,1.0,3.0,586.0] | 0.422222
+ * 0     | [0.0,6.0,4.0,0.0]   | 0.733333
+ * 
+ * These predictions will NOT make sense since we are looking for a label of 0 or 1. Guess we can say 0.42 evaluated to 0 and 0.73 evaluated to 1. Lets look at the model itself by calling todebug
+ * string method
+ */
+		System.out.println(model.toDebugString());
+		
+/* DecisionTreeRegressionModel (uid=dtr_2267...) of depth 3 with 15 nodes
+ * 	If (feature 3 <= 9886.5)
+ * 		If (feature 2 <= 5.5)
+ * 			If (feature 3 <= 1887.0)
+ * 				Predict: 0.2528
+ * 			Else (feature 3 > 1887.0)
+ * ...
+ * 
+ * This is a bit complicated to read. We will change model in a bit to correct model type and can make a picture from that. This, what we have currently is embded if statements.
+ * If feature 3 less than 9800, AND feature 2 less than 5.5 AND feature 3 less than 1887, then predict 0.728. Otherwise... You get the idea.
+ *  
+ * Now to make this correct model type just use decision tree classifier
+ */
+		
+		DecisionTreeClassifier dtClassifier = new DecisionTreeClassifier();
+		dtClassifier.setMaxDepth(3);
+		
+		DecisionTreeClassificationModel model1 = dtClassifier.fit(trainingData); 
+		
+		model1.transform(holdoutData).show();
+		
+/* DecisionTreeClassificationModel (uid=dtr_23e92c...) of depth 3 with 15 nodes
+ * 	If (feature 3 <= 17585.0)
+ * 		If (feature 3 <= 2.5)
+ * 			If (feature 0 in {0.0,1.0,2.0,3.0,5.0})
+ * 				Predict: 0.0
+ * 			Else (feature 0 not in {0.0,1.0,2.0,3.0,5.0})
+ * ...
+ * 
+ * Next we will make a picture from the flow chart.
+ */
+		
+	}
+}

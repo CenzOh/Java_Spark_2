@@ -1,0 +1,41 @@
+package com.virtualpairprogrammers;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
+
+public class Lesson109 {
+
+/* Lesson 109 Case Study Walkthrough.
+ * 
+ * First thing to do is copy the data into resources folder. Instructor makes new class called VPPChapterViews. We can copy and paste some part of the housePriceFields java file.
+ */
+	
+	public static void main(String[] args) { 
+		
+		System.setProperty("hadoop.home.dir", "c:/hadooop"); 
+		Logger.getLogger("org.apache").setLevel(Level.WARN);
+		
+		SparkSession spark = SparkSession.builder()
+				.appName("VPP Chapter Views")
+				.config("spark.sql.warehouse.dir", "file:///c:/tmp/")
+				.master("local[*]")
+				.getOrCreate();
+		
+		Dataset<Row> csvData = spark.read()
+				.option("header",  true)
+				.option("inferSchema", true)
+				.csv("src/main/resources/vppChapterViews/*.csv"); //* brings all of the files 
+		
+//		csvData.show(); //after reading in looks good. Lets keep checking as we go.
+/* payment_method_type | country ...
+ * SAGEPAY             | grb ...
+ * 
+ * Next lets filter out records where is cancelled is true
+ */
+		csvData = csvData.filter("is_cancelled = false").drop("observation_date","is_cancelled"); //using sql syntax and drop our unneeded cols
+//		csvData.show(); //looks good, we dont have the two cols we dropped so should be good now
+	}
+}

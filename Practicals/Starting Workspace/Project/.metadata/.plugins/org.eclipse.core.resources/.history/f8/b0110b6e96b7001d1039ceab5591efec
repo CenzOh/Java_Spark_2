@@ -1,0 +1,12 @@
+package com.virtualpairprogrammers;
+
+public class Lesson112 {
+
+/* Lesson 112 True / False Negatives and Positives
+ * 
+ * So far we learned how to use linear regression model with Spark. In fact we have seen entire syntax and process flow of spark ML algorithms. We can swap linear regression with any other
+ * model type and use exact same syntax and structure. Every model in spark is built from Transformers and Estimators. We have to pick the right transformers and estimators properties
+ * Correctly for the model type we want to use. Our second model type is logistical regression, similar to linear reg. Difference is linear reg predicts a numerical outcome / wide range
+ * of numbers available as result of outcome. Last chapter ex was predicting num of videos a customer may watch from 0 - very high number.
+ */
+}

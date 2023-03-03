@@ -1,0 +1,143 @@
+package com.virtualpairprogrammers;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.spark.ml.clustering.KMeans;
+import org.apache.spark.ml.clustering.KMeansModel;
+import org.apache.spark.ml.evaluation.ClusteringEvaluator;
+import org.apache.spark.ml.feature.OneHotEncoderEstimator;
+import org.apache.spark.ml.feature.StringIndexer;
+import org.apache.spark.ml.feature.VectorAssembler;
+import org.apache.spark.ml.linalg.Vector;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
+
+public class Lesson118 {
+
+/* Lesson 118 K Means Clustering
+ * 
+ * We built supervised models so far, has a label and features. Modle predicts label from features. NExt we will look at unsupervised models. We dont know the answer we try to get to.
+ * We will begin with k means clustering. Idea is to group data items based on features. Lets look at the gym competitors example.
+ * 
+ * CompetitorID | Gender | Age | Height | Weight | NoOfReps
+ * 1		    | M      | 23  | 180    | 88     | 55
+ * ...
+ * 
+ * Above is a reminder of the gym competitor data. Now we dont know for instance for the first competitor, with his attributes is 55 reps a good or bad score?  We dont know. Maybe we can
+ * group our competitors into categories and see who is the top competitor in each category. Think of sporting competition. We will use ML to put the competitors into groups
+ * where averages make sense. Maybe a male weighing 88 kg has similar results to a female weighing 80 kgs so then we want to group them together. Group our data based on similarities of features.
+ * So we will end up with groups that may not be easy to describe. Instead of group of males over 24 we have group of competitors who have similar features. 
+ * Also with unsupervised learning, we wont have a label. Just features. Lets reuse some of our earlier code. Create new class GymCompetitorsClustering.
+ */
+	
+	public static void main(String[] args) {
+		
+		System.setProperty("hadoop.home.dir", "c:/hadooop"); 
+		Logger.getLogger("org.apache").setLevel(Level.WARN);
+		
+		SparkSession spark = SparkSession.builder()
+				.appName("Gym Competitors")
+				.config("spark.sql.warehouse.dir", "file:///c:/tmp/")
+				.master("local[*]")
+				.getOrCreate();
+		
+		Dataset<Row> csvData = spark.read()
+				.option("header",  true)
+				.option("inferSchema", true)
+				.csv("src/main/resources/GymCompetition.csv");
+		
+		StringIndexer genderIndexer = new StringIndexer(); 
+		genderIndexer.setInputCol("Gender"); 
+		genderIndexer.setOutputCol("GenderIndex"); 
+		csvData = genderIndexer.fit(csvData).transform(csvData);
+				
+		OneHotEncoderEstimator genderEncoder = new OneHotEncoderEstimator();
+		genderEncoder.setInputCols(new String[] {"GenderIndex"});
+		genderEncoder.setOutputCols(new String[] {"GenderVector"});
+		csvData = genderEncoder.fit(csvData).transform(csvData);
+		csvData.show();
+
+/* CompetitorID | Gender | Age | Height | Weight | NoOfReps | GenderIndex | GenderVector
+ * 1			| M		 | 23  | 180    | 88     | 55       | 0.0         | (1,[0],[1.0]
+ * 
+ * We wont be using competitor ID. We must decidie which features to use and how to categorize them. Num of reps is a valid feature and important. Lets pick gender, age, weight, height, no of reps.
+ * Lets start with a VectorAssembler
+ */
+		VectorAssembler vectorAssembler = new VectorAssembler();
+		Dataset<Row> inputData = vectorAssembler.setInputCols(new String[] {"GenderVector","Age","Height","Weight","NoOfReps"} ) //input our 5 features 
+			.setOutputCol("features").transform(csvData).select("features"); //output and call this new col features, select only this col for our model
+		inputData.show();
+		
+/* features             |
+ * [1.0,20.0,185.0,7... |
+ * 
+ * Good works, correct format, ready to build the model
+ */
+		KMeans kMeans = new KMeans(); //make sure to import from ML 
+
+/* Next we have a parameter we need to set for KMeans model, that is the number of clusters we would like to have / how many categories we want to group our competitors into. 
+ * Lets pick 3 for now. set with .setK()
+ */
+		kMeans.setK(3); 
+		
+/* note we didn't do anything for separate holdout dataset for this. THats because unsupervised learning d/n have an answer, no way to validate our answer. There are some measures of accuracy
+ * which we will talk about later. With unsupervised learning, we dont separate our dataset into separate holdout or test data set. We fit all of our data when working with unsupervised learning.
+ * calling .fit() will return an object of KMeansModel
+ */
+		KMeansModel model = kMeans.fit(inputData); //import from ml. Next call transform on our model
+		Dataset<Row> predictions = model.transform(inputData);
+		predictions.show();
+
+/* features            | prediction
+ * [1.0,23.0,180.0,8...| 2
+ * 
+ * So each of the entries will now be put into a group. Looks like groups are either 2, 1, or 0 since we set the value of k / num of clusters to be 2. What does that mean? How can we understand 
+ * what groups 0, 1, and 2 look like? Well we can call cluster centers. Get them from the model using the method .clusterCenters(). Returns an array of vectors. Loop through and print
+ */
+		Vector[] clusterCenters = model.clusterCenters(); //import vector from org.apache.spark.ml.linalg
+		for (Vector v : clusterCenters) { System.out.println(v); }
+		
+/* To understand results, recall the order that we created our vector for the features. First entry is gender. THe first line of output is cluster 0, second line is cluster 1, etc.
+ * I will write in tabular format so easy to read
+ * 
+ * Cluster | Gender | Age  | Height | Weight | No of Reps
+ * 0       | 0.333  | 22.0 | 172.0  | 71.333 | 50.0
+ * 1       | 0.0    | 22.5 | 167.75 | 60.0   | 44.75
+ * 2       | 0.8    | 22.1 | 179.0  | 83.60  | 54.30
+ * 
+ *  Ok so in cluster 0, theres a mix of males and feamles. But its actually 1/3 of males and 2/3 females. Cluster 1 is all males. Cluster 2 is 80 oercent females.
+ *  Next col is age, cluster 0 has avg age of 22, cluster 1 has avg age of 22.5, etc. AGe not a big spread. Do same thing where height, weight, and no of reps display avg in the group.
+ *  Point is, each cluster is a grouping of the competitiors with some statistical significance. 
+ */
+		
+		predictions.groupBy("predictions").count().show();
+
+ /*
+ *  Is this a good spread? How many competitors in one group? Find out with groupby() and .count()
+ *  
+ *  prediction | Count
+ *  1          | 4
+ *  2          | 10
+ *  0          | 6
+ *  
+ *  Ok so prob not best spread. We can improve the model by changin num of groups. First lets discuss model accuracy. Two metrics we can use. Sum of squared errors which is a measure of
+ *  the distance from each of the competitors categories to the avg that was calculated. Ex - each competitor in group 1, how does their age compare to the avg age? etc.
+ *  If the model is accurate, the avg should be low since each competitor should be closer to the avg for the group. 
+ *  
+ *  Second measure is called silhouette with squared euclidean distance. Super complicated mathematical calculation, it gives us a value between -1 and 1. The best model would have the lowest
+ *  sum of squared errors and silhouette closest to 1.  We can get the sum of squared errors by calling on the model, the method compute cost.
+ */
+		System.out.println("SSE us " + model.computeCost(inputData) );
+		
+		ClusteringEvaluator evaluator = new ClusteringEvaluator();
+		System.out.println("Silhouette with squared euclidean distance is " + evaluator.evaluate(predictions));
+		
+/* SSE is 1136.166
+ * Silhouette is 0.48121
+ * 
+ * The SSE looks quite high and the silhoutte is halfway to 1, kind of low. 
+ */
+		
+	}
+}

@@ -1,0 +1,30 @@
+package com.virtualpairprogrammers;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.spark.SparkConf;
+import org.apache.spark.streaming.Durations;
+import org.apache.spark.streaming.api.java.JavaReceiverInputDStream;
+import org.apache.spark.streaming.api.java.JavaStreamingContext;
+
+public class Lesson125 {
+
+/* Lesson 125 Stream Transformation
+ * 
+ * Lets show how we can show how the code in spark batch mode is similar to streaming and how easy it is.
+ * 
+ */
+	
+	@SuppressWarnings("resource") 
+	public static void main(String[] args) {
+		System.setProperty("hadoop.home.dir", "c:/hadoop"); 
+		Logger.getLogger("org.apache").setLevel(Level.WARN); 
+	
+		SparkConf conf = new SparkConf().setMaster("local[*]").setAppName("startingSpark");
+//boilerplate ^^^^^	
+
+		JavaStreamingContext sc = new JavaStreamingContext(conf, Durations.seconds(30));//sc for spark context usually called jsc but thats kinda ugly
+
+		JavaReceiverInputDStream inputData = sc.socketTextStream("localhost", 8989);
+	}
+}

@@ -1,0 +1,75 @@
+package com.virtualpairprogrammers;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
+
+public class Lesson114 {
+
+/* Lesson 114 Overview of Decision Trees
+ * 
+ * Next model is decision trees. There are two types in spark we will cover both. Decision trees are cool! Outcome is easy to understand and easy to translate to english. 
+ * Ex - is it an existing customer? - yes -> low risk
+ * 									| - no - is customer in high risk country? - yes -> high risk ....
+ * 
+ * Goal of building a DT with ML is to end up with a human readable flowchart which we can use as a decision making tool. The above example is a great example. Looking to find if
+ * the transaction will be fraudulent or genuine. Idea is ML process comes up with a process which is a set of rules. If you ask right questions, you can categorize each transaction
+ * with an outcome based on these features within the questions. THis example is a boolean example but DTs can have multiple categories.
+ * 
+ * DTs will be more complicated but this is just a simple example. THe example we will be covering is the following: VPP offers a free trial, we want to know half way through the trial
+ * period if the customer will become a paying customer or not. If not, we can do something to encourage them to become a paying customer. Can find this out with the DT. Build
+ * one with the features available to us to find out if they will be paying customers or not. We will be using the file vppFreeTrials.csv. I put it in `chp10data` folder in resources. 
+ * 
+ * Lets look at this file. New class will be VPPFreeTrials. I will do it in here as well. We can pretty much copy the first part of the log reg java. Copy until loading csv file.
+ */
+	
+	public static void main(String[] args) { 
+		
+		System.setProperty("hadoop.home.dir", "c:/hadooop"); 
+		Logger.getLogger("org.apache").setLevel(Level.WARN);
+		
+		SparkSession spark = SparkSession.builder()
+				.appName("VPP Chapter Views")
+				.config("spark.sql.warehouse.dir", "file:///c:/tmp/")
+				.master("local[*]")
+				.getOrCreate();
+		
+		Dataset<Row> csvData = spark.read()
+				.option("header",  true)
+				.option("inferSchema", true)
+				.csv("src/main/resources/chp10data/vppFreeTrials.csv"); //up to here and load up the free trial data
+		
+//		csvData.show();
+/* country | rebill_period | payments_made | chapter_access_count | seconds_watched
+ * UNKNOWN | 1  		   | 1			   | 3					  | 9406
+ * 
+ * Talking through the columns in the dataset:
+ * 
+ * country - country of the customer's IP address resolves to. If we dont know it we leave it as UNKNOWN
+ * rebill_period - this will be 1, 6, or 12 to indicate if its one month, six months, one year subscription. We saw this in previous example.
+ * payments_made - num of payments we received from this customer. IF 0, this was a free trial that didnt convert. 1 or higher is a customer that did convert and is paying.
+ * 		If you like, this is the field we are trying to determine if the number in here will be 1 or greater (good outcome) or a 0 (free trial didnt convert).
+ * chapter_access_count - num of chapters the customers viewed at the halfway point of their free trial. If free trial lasted 4 days, this col would display num viewed after 2 days.
+ * seconds_watched - num of seconds of video customer watched, again being first half of their free trial. 
+ * 
+ * This data was cleaned, no NULLs. Extra step we have to do. We want to build a tree based on these features. One of them is countries. Over 60 countries in the list. TOo many to use.
+ * DT in spark has a limit when we use a category the max num of values we can have is 32. This still makes a difficult to navigate tree so make EVEN smaller if possible. 9 or 10 categories ideal.
+ * Lets make smaller group of countries like so:
+ * 
+ * United States USA
+ * Great Britain GB
+ * India - these three countries on their own because they have customers in these countries more than any other countries
+ * Other EU countries 
+ * 
+ */
+		
+		
+		
+		
+		
+		
+		
+	}
+}

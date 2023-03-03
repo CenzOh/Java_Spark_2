@@ -1,0 +1,13 @@
+package com.virtualpairprogrammers;
+
+public class Lesson129 {
+
+/* Lesson 129 Overview of Kafka
+ * 
+ * Other tahn set up streaming and start process, analysis, filters, maps, reduce by key same thing we would do in spark. Great but our demo was using a brittle socket connection.
+ * Wouldnt be doing that in real life. Lets switch to common component in streaming architecture, apache kafka. Kafka is used in combo with spark when it comes to streaming,
+ * we will have a basic overview of it. Not deep detail. High level. 
+ * 
+ * What is kafka and what can it do? 
+ */
+}

@@ -1,0 +1,11 @@
+package com.virtualpairprogrammers;
+
+public class Lesson140 {
+
+/* Lesson 140 Window and Watermarks
+ * 
+ * Waht if want figures for last hours? Remember window operation from DStream. Structured Streaming different tho. Before we did this where when we performed aggregation we
+ * used alternative version of aggretation method which ended the window so we can specify a period. In sql we aggregate through group by clause. We can add a tfurther grouping
+ * called window. 
+ */
+}

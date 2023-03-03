@@ -1,0 +1,9 @@
+package com.virtualpairprogrammers;
+
+public class Lesson142 {
+
+/* Lesson 142  Kafka Structured Streaming Pipelines 
+ * 
+ * We've been capturing events in kafka, connect multi subscriebrs to a kafka topic. 
+ */
+}

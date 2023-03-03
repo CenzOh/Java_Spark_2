@@ -1,0 +1,10 @@
+package com.virtualpairprogrammers;
+
+public class Lesson131 {
+
+/* Lesson 131 Using Kafka Event Simulator
+ * 
+ * Now our kafka server is setup. We can create our first kafka topic. We called it view records. 
+ * 
+ */
+}

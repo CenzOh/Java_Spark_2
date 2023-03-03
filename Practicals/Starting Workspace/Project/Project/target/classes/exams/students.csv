@@ -1,0 +1,4 @@
+student_id	exam_center_id	subject	year	quarter	score	grade
+1	1	Math	2005	1	41	D
+1	1	Spanish	2005	1	51	C
+2	1	Math	2005	1	98	A+

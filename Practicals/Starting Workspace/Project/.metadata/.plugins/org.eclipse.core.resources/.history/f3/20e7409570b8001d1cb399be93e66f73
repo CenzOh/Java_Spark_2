@@ -1,0 +1,17 @@
+package com.virtualpairprogrammers;
+
+public class Lesson117 {
+
+/* Lesson 117 Random FOrests
+ * 
+ * Lets try to improve accuracy. One thing is increase depth. But a cool thing to do is random forest. How do they work? So far we built one tree. When working with regression models
+ * we use the train validation split to tell spark to make a lot of models and pick the best one. Random Forests is the train validation split if decision trees.
+ * 
+ * It works a bit different though. When we build a RF, we tell spark to build lots of different models and do that with different subsets of the data. The models we are going to build are not
+ * going to be using a parameter grid, just different versions of the same tree. We dont know which tree will be better than any other. We also will NOT pick the best tree. We will
+ * keep ALL the trees we build in the forst and maintain all of them. So when we come to transform our hold out data, spark will calculate a prediction for each entry using every tree,
+ * and take the average result.
+ * 
+ * So again, instead of picking the best model. We'll end up with lets say 20 models 
+ */
+}

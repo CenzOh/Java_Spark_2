@@ -1,0 +1,55 @@
+package com.virtualpairprogrammers;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.spark.SparkConf;
+import org.apache.spark.streaming.Durations;
+import org.apache.spark.streaming.api.java.JavaDStream;
+import org.apache.spark.streaming.api.java.JavaPairDStream;
+import org.apache.spark.streaming.api.java.JavaReceiverInputDStream;
+import org.apache.spark.streaming.api.java.JavaStreamingContext;
+
+import scala.Tuple2;
+
+public class Lesson128 {
+
+/* Lesson 128 Windowing Batches
+ * 
+ * Okay so we can see the regular batches are coming in. But its not useful to just get the count for last two seconds. Maybe we want to know how many errors in past week?
+ * We can change batch size to an hour, wait an hour, see there are so many errors. But thats not useful either, we have to wait. SO lets aggregate across the last hour but we
+ * want to see regular updates to current state. 
+ * 
+ * In spark this is the concept of a window, specify a series of time we want to perform a particular aggregation, it looks backwards in time at earlier batches. Best of both results
+ * 
+ * 				DStream
+ * 					________________
+ * 				   |     Window     |
+ * Batch 1 Batch 2 | Batch 3 Batch 4|
+ * 
+ * For a window, we define it dynamically at the point where we do our aggregation. Any aggregation operation on a DStream by default will do for the last batch. Previous data from last
+ * batches still available to us.
+ */
+	
+	@SuppressWarnings("resource") 
+	public static void main(String[] args) throws InterruptedException {
+		System.setProperty("hadoop.home.dir", "c:/hadoop"); 
+		Logger.getLogger("org.apache").setLevel(Level.WARN); 
+		Logger.getLogger("org.apache.spark.storage").setLevel(Level.ERROR); 
+	
+		SparkConf conf = new SparkConf().setMaster("local[*]").setAppName("startingSpark");
+
+		JavaStreamingContext sc = new JavaStreamingContext(conf, Durations.seconds(2)); 
+
+		JavaReceiverInputDStream<String> inputData = sc.socketTextStream("localhost", 8989);
+
+		JavaDStream<String> results = inputData.map(item -> item); 
+		results.print(); 
+
+		JavaPairDStream<String, Long> pairDStream = results.mapToPair(rawLogMessage -> new Tuple2<> (rawLogMessage.split(",")[0], 1L)); 
+		
+		pairDStream = pairDStream.reduceByKeyAndWindow((x,y) -> x + y, Durations.minutes(2));  //use reduceByKeyAndWindow, it takes additional parameters such as the window duration
+//we will do 2 minutes for now to show what happens when we have enough info to fill the window
+		
+		pairDStream.print();
+	}
+}

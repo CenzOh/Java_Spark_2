@@ -1,0 +1,9 @@
+package com.virtualpairprogrammers;
+
+public class Lesson117 {
+
+/* Lesson 117 Random FOrests
+ * 
+ * Lets try to improve accuracy. One thing is increase depth. But a cool thing to do is random forest. How do they work? So far we built one tree. 
+ */
+}

@@ -1,0 +1,10 @@
+package com.virtualpairprogrammers;
+
+public class Lesson139 {
+
+/* Lesson 139 Structured Streaming Output Modes
+ * 
+ * This is not just a change of api but a whole new model
+ * 
+ */
+}

@@ -1,0 +1,43 @@
+package com.virtualpairprogrammers;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Map;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.spark.SparkConf;
+import org.apache.spark.streaming.Durations;
+import org.apache.spark.streaming.api.java.JavaStreamingContext;
+
+public class Lesson133 {
+
+/* Lesson 133 Using Kafkas Utils to access DStream
+ * 
+ * We have a class called Kafka.utils. Most cases we want to use locationStrategies.PreferCOnsistent. Third arg is topic we will assume.
+ * Kafka needs a way to track which was last event we consumed. Can do it programmatically / manually tell kafka we consumed a message. However, bad performance.
+ * SO we can set it to auto.commit true. Will do it automatically. Risk is it program crashes BEFORE the commit we may have some events consumed more than once. 
+ */
+	
+	@SuppressWarnings("resource") 
+	public static void main(String[] args) throws InterruptedException {
+		System.setProperty("hadoop.home.dir", "c:/hadoop"); 
+		Logger.getLogger("org.apache").setLevel(Level.WARN); 
+		Logger.getLogger("org.apache.spark.storage").setLevel(Level.ERROR); 
+	
+		SparkConf conf = new SparkConf().setMaster("local[*]").setAppName("startingSpark");
+		
+		JavaStreamingContext sc = new JavaStreamingContext(conf, Durations.seconds(1));
+		
+		Collection topics = Arrays.asList("viewrecords");
+		
+		Map<String, Object> params = new HashMap<>();
+		params.put("bootstrap.servers",  "localhost:9092");
+		params.put("key.deserializer",  StringDeserializer.class); //check import for stringDeserializer from kafka package.
+		params.put("group.id", "spark-group");
+		params.put("auto.offset.reset", "latest")
+
+		KafkaUtils.createDirectStream(src, LocationStrategies.PreferConsistent(), 
+				ConsumerStrategies.Subscribe(topics, params)); //pick strategies pluarl
+	}
+}

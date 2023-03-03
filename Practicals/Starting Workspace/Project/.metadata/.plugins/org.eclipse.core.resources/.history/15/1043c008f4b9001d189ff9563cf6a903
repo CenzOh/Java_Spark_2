@@ -1,0 +1,100 @@
+package com.virtualpairprogrammers;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.spark.SparkConf;
+import org.apache.spark.streaming.Durations;
+import org.apache.spark.streaming.api.java.JavaDStream;
+import org.apache.spark.streaming.api.java.JavaPairDStream;
+import org.apache.spark.streaming.api.java.JavaReceiverInputDStream;
+import org.apache.spark.streaming.api.java.JavaStreamingContext;
+
+import scala.Tuple2;
+
+public class Lesson128 {
+
+/* Lesson 128 Windowing Batches
+ * 
+ * Okay so we can see the regular batches are coming in. But its not useful to just get the count for last two seconds. Maybe we want to know how many errors in past week?
+ * We can change batch size to an hour, wait an hour, see there are so many errors. But thats not useful either, we have to wait. SO lets aggregate across the last hour but we
+ * want to see regular updates to current state. 
+ * 
+ * In spark this is the concept of a window, specify a series of time we want to perform a particular aggregation, it looks backwards in time at earlier batches. Best of both results
+ * 
+ * 				DStream
+ * 					________________
+ * 				   |     Window     |
+ * Batch 1 Batch 2 | Batch 3 Batch 4|
+ * 
+ * For a window, we define it dynamically at the point where we do our aggregation. Any aggregation operation on a DStream by default will do for the last batch. Previous data from last
+ * batches still available to us.
+ */
+	
+	@SuppressWarnings("resource") 
+	public static void main(String[] args) throws InterruptedException {
+		System.setProperty("hadoop.home.dir", "c:/hadoop"); 
+		Logger.getLogger("org.apache").setLevel(Level.WARN); 
+		Logger.getLogger("org.apache.spark.storage").setLevel(Level.ERROR); 
+	
+		SparkConf conf = new SparkConf().setMaster("local[*]").setAppName("startingSpark");
+
+		JavaStreamingContext sc = new JavaStreamingContext(conf, Durations.seconds(2)); 
+
+		JavaReceiverInputDStream<String> inputData = sc.socketTextStream("localhost", 8989);
+
+		JavaDStream<String> results = inputData.map(item -> item); 
+
+		JavaPairDStream<String, Long> pairDStream = results.mapToPair(rawLogMessage -> new Tuple2<> (rawLogMessage.split(",")[0], 1L)); 
+		
+		pairDStream = pairDStream.reduceByKeyAndWindow((x,y) -> x + y, Durations.minutes(2));  //use reduceByKeyAndWindow, it takes additional parameters such as the window duration
+//we will do 2 minutes for now to show what happens when we have enough info to fill the window
+		
+		pairDStream.print();
+		
+/* You should be able to see on each batch, it keeps adding up
+ * -------------------------------------------
+Time: 1677869092000 ms
+-------------------------------------------
+(DEBUG,5513)
+(FATAL,1)
+(WARN,1047)
+(ERROR,106)
+(INFO,4474)
+
+-------------------------------------------
+Time: 1677869094000 ms
+-------------------------------------------
+(DEBUG,6224)
+(FATAL,1)
+(WARN,1201)
+(ERROR,121)
+(INFO,5105)
+
+ * The fatal is useful since it doesnt come too often. Once we approach the 2 minutes when the window fills up, the early batches will not include those last 2 minutes anymore,
+ * will change to be last 2 seconds. Numbers will go down a bit. You can see the fatal drops down after more than 2 minutes pass.
+ * 
+-------------------------------------------
+Time: 1677869234000 ms
+-------------------------------------------
+(DEBUG,44269)
+(FATAL,10)
+(WARN,7923)
+(ERROR,920)
+(INFO,35383)
+
+-------------------------------------------
+Time: 1677869236000 ms
+-------------------------------------------
+(DEBUG,44313)
+(FATAL,9)            // can see here
+(WARN,7940)
+(ERROR,926)
+(INFO,35457)
+
+ * Look at spark UI to see how complicated it gets. DOesnt run legacy calculations again, it already has the data it just simply adds the totals together. 
+ */
+		
+		sc.start();
+		sc.awaitTermination();
+	}
+}

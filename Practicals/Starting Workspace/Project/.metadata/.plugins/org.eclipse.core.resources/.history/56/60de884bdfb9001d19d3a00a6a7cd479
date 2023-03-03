@@ -1,0 +1,23 @@
+package com.virtualpairprogrammers;
+
+public class Lesson124 {
+
+/* Lesson 124 Starting a streaming job. 
+ * 
+ * We will write a streaming job to constantly take in this stream of messages. Spark streaming is NOT a part of spark core so we have to add a dependency into our 
+ * pom.xml. Add the following to match with our ver of spark core:
+ * 
+ *  <dependency>
+	      <groupId>org.apache.spark</groupId>
+	      <artifactId>spark-streaming_2.11</artifactId>
+	      <version>2.3.2</version>
+    </dependency>
+ *
+ * Again the 2.11 is the scala version. Make sure we have same 2.3.2 ver as spark core. Then run pom.xml as a maven build. GOal eclipse:eclipse and eclipse:clean.
+ * What this does is we tell eclipse to download all the jars and have update the local build path inside eclipse. Find all jar files, download. Once it says build success go to the project
+ * right click, refresh. Jar files should ahve spark-streaming_2.11 jar files.
+ * 
+ * NOTE TO SELF after adding this and following the instructions my project was unable to compile a lot of things it says issue is something like source level 1.5 or higher? Not sure
+ * going to finish the module as is anyway.
+ */
+}

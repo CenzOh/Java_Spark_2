@@ -1,0 +1,87 @@
+package com.virtualpairprogrammers;
+
+//importing all static functions 
+import static org.apache.spark.sql.functions.col;
+import static org.apache.spark.sql.functions.when;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.spark.ml.feature.OneHotEncoderEstimator;
+import org.apache.spark.ml.feature.StringIndexer;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
+
+public class Lesson110 {
+
+/* Lesson 110 Case Study Walkthrough Part 2
+ * 
+ * Lets now create the final vector of features and get data in right format
+ */
+	
+	public static void main(String[] args) { 
+		
+		System.setProperty("hadoop.home.dir", "c:/hadooop"); 
+		Logger.getLogger("org.apache").setLevel(Level.WARN);
+		
+		SparkSession spark = SparkSession.builder()
+				.appName("VPP Chapter Views")
+				.config("spark.sql.warehouse.dir", "file:///c:/tmp/")
+				.master("local[*]")
+				.getOrCreate();
+		
+		Dataset<Row> csvData = spark.read()
+				.option("header",  true)
+				.option("inferSchema", true)
+				.csv("src/main/resources/vppChapterViews/*.csv");  
+		
+//		csvData.show(); //after reading in looks good. Lets keep checking as we go.
+
+		csvData = csvData.filter("is_cancelled = false").drop("observation_date","is_cancelled"); //using sql syntax and drop our unneeded cols
+//		csvData.show(); //looks good, we dont have the two cols we dropped so should be good now
+		
+//next get rid of nulls. using when fcn, first param is boolean. When firstSub is NULL, turn into 0. OTHERWISE we can leave firstSub as is since it will be a 1.
+		csvData = csvData.withColumn("firstSub", when( col("firstSub").isNull(), 0 ).otherwise(col("firstSub")) ) //do the same thing for the other three cols
+				.withColumn("all_time_views", when (col("all_time_views").isNull(), 0).otherwise(col("all_time_views"))) 
+				.withColumn("last_month_views", when (col("last_month_views").isNull(), 0).otherwise(col("last_month_views")))
+				.withColumn("next_month_views", when (col("next_month_views").isNull(), 0).otherwise(col("next_month_views")));
+
+
+		csvData = csvData.withColumnRenamed("next_month_views", "label");
+		
+// Next let us deal with the cateogry columns. We want to encode them. Lets start with payment method type. First thing is to index it
+		StringIndexer payMethodIndexer = new StringIndexer(); 
+		csvData = payMethodIndexer.setInputCol("payment_method_type")
+			.setOutputCol("payIndex")
+			.fit(csvData)
+			.transform(csvData);
+		
+		StringIndexer countryIndexer = new StringIndexer();
+		csvData = countryIndexer.setInputCol("country")
+				.setOutputCol("countryIndex")
+				.fit(csvData)
+				.transform(csvData);
+		
+		StringIndexer periodIndexer = new StringIndexer();
+		csvData = periodIndexer.setInputCol("rebill_period_in_months")
+				.setOutputCol("periodIndex")
+				.fit(csvData)
+				.transform(csvData);
+		
+//after indexing lets create the oneHotCoderEstimator to encode
+		
+		OneHotEncoderEstimator encoder = new OneHotEncoderEstimator();
+		encoder.setInputCols(new String[] {"payIndex", "countryIndex", "periodIndex"})
+			.setOutputCols(new String[] {"payVector", "countryVector", "periodVector"})
+			.fit(csvData).transform(csvData);
+		
+//		csvData.show(); //so far looking good, we expect to see additional cols at the end
+		
+		
+/* **************** Lesson 110, Part 2 starts here
+ * 
+ * Lets now create the final vector of features. We'll create a new data set and call it input data
+ */
+		
+	}
+}

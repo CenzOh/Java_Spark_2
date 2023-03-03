@@ -1,0 +1,11 @@
+package com.virtualpairprogrammers;
+
+public class Lesson128 {
+
+/* Lesson 128 Windowing Batches
+ * 
+ * Okay so we can see the regular batches are coming in. But its not useful to just get the count for last two seconds. Maybe we want to know how many errors in past week?
+ * We can change batch size to an hour, wait an hour, see there are so many errors. But thats not useful either, we have to wait. SO lets aggregate across the last hour but we
+ * want to see regular updates to current state. 
+ */
+}

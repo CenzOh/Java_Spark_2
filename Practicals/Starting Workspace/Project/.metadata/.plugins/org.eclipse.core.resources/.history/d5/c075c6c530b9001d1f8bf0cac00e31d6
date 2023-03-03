@@ -1,0 +1,14 @@
+package com.virtualpairprogrammers;
+
+public class Lesson119 {
+
+/* Lesson 119 Overview and Matrix Factorization
+ * 
+ * This is our second unsupervised model to look at. It is useful for recommender systems. Lets clarify what a recommender system is. Remember, our last model can be used for this!
+ * Suppose we run an online music streaming service. Lots of song in the database and we used k means clustering to group each song into a category based on features like which country
+ * the performer is in, tempo of song, length, etc.
+ * 
+ * songID | Genre | Performer Country | Tempo (BPM) | Length | Loudness
+ * 
+ */
+}

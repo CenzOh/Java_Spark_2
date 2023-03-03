@@ -1,0 +1,16 @@
+package com.virtualpairprogrammers;
+
+public class Lesson122 {
+
+/* Lesson 122 Intro to Straming
+ * 
+ * We will look at spark streaming in this module. So far on the course we used spark for batched jobs, we have a set of data prepared and stored somewhere. Feed it in a spark job and outcome
+ * the results when done. What we can do is have live data to process in real time at the same time that the data is being generated. THis is where spark streaming comes into play.
+ * Some examples - stream of events from a website like clicks, page views, movement of mouse ppointer, etc. Gather all those events, stream them through spark streaming, 
+ * do analysis such as live dashboard, info about what users are doing, how many on the website, service log in real time, raise alert if something bad occurs, analyze financial
+ * transactions or share price updates as they occur. 
+ * 
+ * WE can view the spark streaming webpage at https://spark.apache.org/streaming/ Top feature of streaming is its ease of use. We will write streaming jobs in a similar way to how
+ * we wrote batch jobs. 
+ */
+}

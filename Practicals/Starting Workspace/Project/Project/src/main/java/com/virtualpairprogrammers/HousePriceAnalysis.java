@@ -17,7 +17,7 @@ import org.apache.spark.sql.SparkSession;
 
 public class HousePriceAnalysis {
 
-public static void main(String[] args) {
+	public static void main(String[] args) {
 		
 		System.setProperty("hadoop.home.dir", "c:/hadooop"); 
 		Logger.getLogger("org.apache").setLevel(Level.WARN);

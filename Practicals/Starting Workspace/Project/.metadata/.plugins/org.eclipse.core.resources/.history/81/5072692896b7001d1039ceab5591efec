@@ -1,0 +1,9 @@
+package com.virtualpairprogrammers;
+
+public class Lesson112 {
+
+/* Lesson 112 True / False Negatives and Positives
+ * 
+ * So far we learned how to use linear regression model with Spark. In fact we have seen entire syntax and process flow of spark ML algorithms.
+ */
+}

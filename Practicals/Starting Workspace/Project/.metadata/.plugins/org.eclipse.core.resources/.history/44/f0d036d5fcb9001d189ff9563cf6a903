@@ -1,0 +1,9 @@
+package com.virtualpairprogrammers;
+
+public class Lesson132 {
+
+/* Lesson 132 Integrate Kafka with Spark
+ * 
+ * We setup the private kafka server with prewritten code to simulate viewing records of online video. Every 5 seconds when viewer watches video, report will be sent to us.
+ */
+}

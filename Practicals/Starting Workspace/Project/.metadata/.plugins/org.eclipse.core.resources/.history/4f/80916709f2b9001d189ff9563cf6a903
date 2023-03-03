@@ -1,0 +1,9 @@
+package com.virtualpairprogrammers;
+
+public class Lesson127 {
+
+/* Lesson 127 Spark UI for Spark Streaming
+ * 
+ * So even tho we have a continuous stream with the log messages, transaction logs, event records, etc. 
+ */
+}

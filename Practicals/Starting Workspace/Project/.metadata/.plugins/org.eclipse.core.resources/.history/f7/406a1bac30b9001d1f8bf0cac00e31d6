@@ -1,0 +1,10 @@
+package com.virtualpairprogrammers;
+
+public class Lesson119 {
+
+/* Lesson 119 Overview and Matrix Factorization
+ * 
+ * This is our second unsupervised model to look at. It is useful for recommender systems. Lets clarify what a recommender system is. Remember, our last model can be used for this!
+ * 
+ */
+}

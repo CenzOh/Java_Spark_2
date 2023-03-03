@@ -1,0 +1,11 @@
+package com.virtualpairprogrammers;
+
+public class Lesson124 {
+
+/* Lesson 124 Starting a streaming job. 
+ * 
+ * We will write a streaming job to constantly take in this stream of messages. Spark streaming is NOT a part of spark core so we have to add a dependency into our 
+ * pom.xml. Add the following to match with our ver of spark core:
+ * 
+ */
+}

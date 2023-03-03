@@ -1,0 +1,18 @@
+package com.virtualpairprogrammers;
+
+public class Lesson127 {
+
+/* Lesson 127 Spark UI for Spark Streaming
+ * 
+ * So even tho we have a continuous stream with the log messages, transaction logs, event records, etc. We see that spark streaming captures these events and groups them into batches.
+ * We can set the size of the batches. They are created in infinite fashion. THey are under the hood at a programming level. We work at an abstraction level called DStream which is 
+ * a collection of these batches.
+ * 
+ * The outputs we see are the results from the latest of those batches. Look at how we can gather together aggregated results from earlier batches as well. Under the hood, each of these batches is 
+ * nothing more than an RDD. Recall we used spark ui earlier in the course and we used tricks to make the program hang so we can access the spark ui. Well we dont have
+ * to do that anymore since this is running in the form of an infinite loop. ALl the time spark stream is running we can access the spark ui console at localhost:4040
+ * 
+ * Now we will see a big long series of completed jobs. We see the execution of each RDD which is in its own batch. Top 2 jobs are for the same RDD, you can tell since they are 
+ * on the same batch time.
+ */
+}

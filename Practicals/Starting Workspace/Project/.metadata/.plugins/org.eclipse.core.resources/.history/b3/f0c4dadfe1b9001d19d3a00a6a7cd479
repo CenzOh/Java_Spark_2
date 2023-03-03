@@ -1,0 +1,52 @@
+package com.virtualpairprogrammers;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.spark.SparkConf;
+import org.apache.spark.streaming.Durations;
+import org.apache.spark.streaming.api.java.JavaDStream;
+import org.apache.spark.streaming.api.java.JavaReceiverInputDStream;
+import org.apache.spark.streaming.api.java.JavaStreamingContext;
+
+public class Lesson125 {
+
+/* Lesson 125 Stream Transformation
+ * 
+ * Lets show how we can show how the code in spark batch mode is similar to streaming and how easy it is
+ */
+	
+	@SuppressWarnings("resource") 
+	public static void main(String[] args) {
+		System.setProperty("hadoop.home.dir", "c:/hadoop"); 
+		Logger.getLogger("org.apache").setLevel(Level.WARN); 
+	
+		SparkConf conf = new SparkConf().setMaster("local[*]").setAppName("startingSpark");
+//boilerplate ^^^^^	
+
+		JavaStreamingContext sc = new JavaStreamingContext(conf, Durations.seconds(30));//sc for spark context usually called jsc but thats kinda ugly
+
+		JavaReceiverInputDStream<String> inputData = sc.socketTextStream("localhost", 8989);
+		
+/* Start here, the inputData has methods from Spark RDD we are familiar with like map, filtering, random, flatMap, flatMapToPairs, reduce function. Our analysis will be a acount of fatals,
+ * WARNS, and FATALS. lets see it run first with a basic map just looking at batches of data.
+ * We need to do some operation to get a DStream. Lets do a map operation. FOr each item we recieve, map it to an instance of that item. We will end up with a result of type JavaDStream.
+ * This is direct equivalent of java RDD. This is NOT an RDD but an equivalent.
+ */
+		JavaDStream<Object> results = inputData.map(item -> item);
+		results.print(); 
+		
+/* We'll be recieving thousands of messages into this socket so we'll get a ton of results. Currently will not work, spark runs through then exists. Spark streaming is running in effectively,
+ * an infinite loop. Recall we have to call sc.start() to START the process, then we need to do sc.awaitTermination() to hold our program open until we terminate JVM
+ * We have a compiler expection saying interuptted exception. 
+ */
+		sc.start();
+		sc.awaitTermination();
+		
+		
+		
+		
+		
+		
+		
+	}
+}

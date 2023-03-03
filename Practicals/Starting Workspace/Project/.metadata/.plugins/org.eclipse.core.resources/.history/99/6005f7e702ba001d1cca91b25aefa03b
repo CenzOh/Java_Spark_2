@@ -1,0 +1,10 @@
+package com.virtualpairprogrammers;
+
+public class Lesson137 {
+
+/* Lesson 137 Structured Streaming Overview
+ * 
+ * We experienced spark structured streaming with abstraction of DStream. lets us use RDDs. API with weird RDD like flavor. Under teh hood spark UI uses RDDs built for each batch
+ * More recently new api introduced called structured streaming. 
+ */
+}

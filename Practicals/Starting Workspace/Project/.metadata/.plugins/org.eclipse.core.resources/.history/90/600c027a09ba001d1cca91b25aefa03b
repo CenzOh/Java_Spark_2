@@ -1,0 +1,10 @@
+package com.virtualpairprogrammers;
+
+public class Lesson141 {
+
+/* Lesson 141 What is Batched Size in Structured Streaming?
+ * 
+ * No where in here we set the batch size. Something odd happening really. SO look at this first batch took 60 seconds but we know second one will take another 60 seconds. 
+ * 
+ */
+}
