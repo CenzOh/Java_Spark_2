@@ -37,4 +37,5 @@
     <fullyQualifiedTypeName name="org.apache.spark.sql.streaming.OutputMode"/>
     <fullyQualifiedTypeName name="org.apache.spark.sql.streaming.Trigger"/>
     <fullyQualifiedTypeName name="org.apache.spark.streaming.Durations"/>
+    <fullyQualifiedTypeName name="com.virtualpairprogrammers.IntegerWithSquareRoot"/>
 </qualifiedTypeNameHistroy>
